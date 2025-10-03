@@ -10,7 +10,7 @@ const handleImageApprovalFlow = async (
     userMessage: string
 ) => {
     const lastMessage = history.at(-1);
-    const toolCall = lastMessage?.tool_calls?.[0];
+    const toolCall = (lastMessage as any)?.tool_calls?.[0];
 
     if (
         !toolCall ||
@@ -42,13 +42,41 @@ const handleImageApprovalFlow = async (
 export const runAgent = async ({
     userMessage,
     tools,
+    isApproval = false,
 }: {
     userMessage: string;
     tools: any[];
+    isApproval?: boolean;
 }) => {
     const history = await getMessages();
-    const isApproval = await handleImageApprovalFlow(history, userMessage);
 
+    // Handle approval flow if this is an approval response
+    if (isApproval) {
+        const lastMessage = history.at(-1);
+        const toolCall = (lastMessage as any)?.tool_calls?.[0];
+
+        if (toolCall && toolCall.function.name === generateImageToolDefinition.name) {
+            const approved = userMessage.toLowerCase() === 'yes' || userMessage.toLowerCase() === 'y';
+
+            if (approved) {
+                const toolResponse = await runTool(toolCall, userMessage);
+                await saveToolResponse(toolCall.id, toolResponse);
+            } else {
+                await saveToolResponse(
+                    toolCall.id,
+                    'User did not approve image generation at this time.'
+                );
+            }
+
+            // Continue with the conversation
+            const newHistory = await getMessages();
+            const response = await runLLM({ messages: newHistory, tools });
+            await addMessages([response]);
+            return getMessages();
+        }
+    }
+
+    // Regular message flow
     if (!isApproval) {
         await addMessages([{ role: 'user', content: userMessage }]);
     }
@@ -61,7 +89,6 @@ export const runAgent = async ({
 
         await addMessages([response]);
 
-
         if (response.content) {
             loader.stop();
             logMessage(response);
@@ -71,17 +98,24 @@ export const runAgent = async ({
         if (response.tool_calls) {
             const toolCall = response.tool_calls[0];
 
-            if (toolCall.function.name === generateImageToolDefinition.name) {
-                loader.stopAndPersist('Do you approve generating an image? (yes/no)');
-                return getMessages();
+            if ((toolCall as any).function.name === generateImageToolDefinition.name) {
+                loader.stop();
+                logMessage(response);
+                // Return with approval needed flag
+                return {
+                    messages: await getMessages(),
+                    needsApproval: true,
+                    approvalType: 'image',
+                    toolCall: toolCall
+                };
             }
 
             logMessage(response);
 
-            loader.update(`executing: ${toolCall.function.name}`);
+            loader.update(`executing: ${(toolCall as any).function.name}`);
             const toolResponse = await runTool(toolCall, userMessage);
-            await saveToolResponse(toolCall.id, toolResponse);
-            loader.update(`done: ${toolCall.function.name}`);
+            await saveToolResponse((toolCall as any).id, toolResponse);
+            loader.update(`done: ${(toolCall as any).function.name}`);
         }
     }
 };

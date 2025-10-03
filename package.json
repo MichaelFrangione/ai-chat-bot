@@ -1,21 +1,15 @@
 {
-  "name": "agents",
-  "module": "index.ts",
-  "type": "module",
+  "name": "chatbot-agent",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "npx tsx index.ts",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "agent": "npx tsx index.ts",
     "eval": "npx tsx evals/run.ts",
     "ingest": "npx tsx src/rag/ingest.ts"
-  },
-  "overrides": {
-    "whatwg-url": "13.0.0"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "tsx": "^4.20.6"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
   },
   "dependencies": {
     "@upstash/vector": "^1.1.7",
@@ -25,11 +19,28 @@
     "dotenv": "^16.4.5",
     "got": "^14.4.4",
     "lowdb": "^7.0.1",
+    "next": "15.5.4",
     "node-fetch": "^3.3.2",
     "openai": "^5.23.1",
     "ora": "^8.1.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "terminal-image": "^3.0.0",
     "uuid": "^11.0.2",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/uuid": "^11.0.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.4",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5"
   }
 }
