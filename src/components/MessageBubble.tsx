@@ -2,6 +2,7 @@
 
 import { ChatMessage } from '@/types/chat';
 import StructuredOutputComponent from './StructuredOutput';
+import { DEV_CONFIG } from '@/config/dev';
 
 interface MessageBubbleProps {
     message: ChatMessage;
@@ -12,8 +13,8 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     const isTool = message.role === 'tool';
 
     if (isTool) {
-        // Hide tool responses in production
-        if (process.env.NODE_ENV === 'production') {
+        // Hide tool responses unless dev mode is enabled
+        if (!DEV_CONFIG.SHOW_TOOL_RESPONSES) {
             return null;
         }
 
@@ -32,8 +33,8 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         );
     }
 
-    // Hide AI assistant messages with tool calls in production
-    if (!isUser && message.tool_calls && message.tool_calls.length > 0 && process.env.NODE_ENV === 'production') {
+    // Hide AI assistant messages with tool calls unless dev mode is enabled
+    if (!isUser && message.tool_calls && message.tool_calls.length > 0 && !DEV_CONFIG.SHOW_TOOL_USAGE) {
         return null;
     }
 
@@ -56,7 +57,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                         </div>
                         <div className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</div>
 
-                        {message.tool_calls && message.tool_calls.length > 0 && process.env.NODE_ENV !== 'production' && (
+                        {message.tool_calls && message.tool_calls.length > 0 && DEV_CONFIG.SHOW_TOOL_USAGE && (
                             <div className="mt-3 pt-2 border-t border-gray-300 dark:border-gray-600">
                                 <div className="flex items-center gap-1 text-xs opacity-75">
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

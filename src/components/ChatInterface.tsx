@@ -6,6 +6,7 @@ import { ChatAPI } from '@/lib/api';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import ApprovalDialog from './ApprovalDialog';
+import { DEV_CONFIG, toggleDevMode } from '@/config/dev';
 
 export default function ChatInterface() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -15,6 +16,7 @@ export default function ChatInterface() {
         toolArgs: any;
         message: string;
     } | null>(null);
+    const [devMode, setDevMode] = useState(DEV_CONFIG.SHOW_TOOL_USAGE);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -98,11 +100,30 @@ export default function ChatInterface() {
         }
     };
 
+    const handleToggleDevMode = () => {
+        const newDevMode = toggleDevMode();
+        setDevMode(newDevMode);
+    };
+
     return (
-        <div className="flex flex-col h-[1000px] bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="flex flex-col h-[calc(100vh-12rem)] bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
-                <h2 className="text-white font-semibold text-lg">AI Assistant</h2>
-                <p className="text-blue-100 text-sm">Powered by advanced AI with tools</p>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-white font-semibold text-lg">AI Assistant</h2>
+                        <p className="text-blue-100 text-sm">Powered by advanced AI with tools</p>
+                    </div>
+                    <button
+                        onClick={handleToggleDevMode}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${devMode
+                            ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                            : 'bg-white/20 hover:bg-white/30 text-white'
+                            }`}
+                        title={devMode ? 'Dev mode enabled - showing tool usage' : 'Click to enable dev mode'}
+                    >
+                        {devMode ? '🔧 Dev' : '👁️ Normal'}
+                    </button>
+                </div>
             </div>
 
             <MessageList
