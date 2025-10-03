@@ -41,7 +41,30 @@ export const addMessages = async (messages: AIMessage[]) => {
     db.data.messages.push(...messages.map(addMetadata));
 
     if (db.data.messages.length >= 10) {
-        const oldestMessages = db.data.messages.slice(0, 5).map(removeMetadata);
+        // Find messages to remove, but ensure we don't orphan tool calls
+        let messagesToRemove = 5;
+        const messagesToCheck = db.data.messages.slice(0, messagesToRemove);
+
+        // Check if any of the messages to be removed are tool calls
+        const hasToolCalls = messagesToCheck.some(msg => (msg as any).tool_calls && (msg as any).tool_calls.length > 0);
+
+        if (hasToolCalls) {
+            // If we have tool calls, only remove messages up to the last tool call
+            // to ensure we don't orphan tool responses
+            const lastToolCallIndex = messagesToCheck.findLastIndex(msg => (msg as any).tool_calls && (msg as any).tool_calls.length > 0);
+            if (lastToolCallIndex >= 0) {
+                // Find the corresponding tool response
+                const toolCallId = (messagesToCheck[lastToolCallIndex] as any).tool_calls?.[0]?.id;
+                const toolResponseIndex = db.data.messages.findIndex(msg => (msg as any).tool_call_id === toolCallId);
+
+                if (toolResponseIndex > lastToolCallIndex) {
+                    // Only remove messages up to and including the tool response
+                    messagesToRemove = toolResponseIndex + 1;
+                }
+            }
+        }
+
+        const oldestMessages = db.data.messages.slice(0, messagesToRemove).map(removeMetadata);
 
         // Create a summary that includes existing summary + new messages
         const messagesToSummarize = [
@@ -53,7 +76,7 @@ export const addMessages = async (messages: AIMessage[]) => {
 
         // Update the summary and remove the old messages
         db.data.summary = newSummary;
-        db.data.messages = db.data.messages.slice(5); // Remove the first 5 messages
+        db.data.messages = db.data.messages.slice(messagesToRemove);
     }
 
     await db.write();

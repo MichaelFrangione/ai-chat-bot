@@ -3,6 +3,7 @@ import { runApprovalCheck, runLLM } from './llm';
 import { showLoader, logMessage } from './ui';
 import { runTool } from './toolRunner';
 import { generateImageToolDefinition } from './tools/generateImage';
+import { parseToolResponse } from './lib/structured-parser';
 import type { AIMessage } from '../types';
 
 const handleImageApprovalFlow = async (
@@ -61,6 +62,16 @@ export const runAgent = async ({
             if (approved) {
                 const toolResponse = await runTool(toolCall, userMessage);
                 await saveToolResponse(toolCall.id, toolResponse);
+
+                // Parse structured output from tool response
+                const structuredOutput = parseToolResponse(toolCall.function.name, toolResponse);
+                if (structuredOutput) {
+                    // Add structured output to the last message
+                    const lastMessage = (await getMessages()).at(-1);
+                    if (lastMessage) {
+                        (lastMessage as any).structuredOutput = structuredOutput;
+                    }
+                }
             } else {
                 await saveToolResponse(
                     toolCall.id,
@@ -83,16 +94,31 @@ export const runAgent = async ({
 
     const loader = showLoader('🤔');
 
+    let pendingStructuredOutput: any = null;
+
     while (true) {
         const history = await getMessages();
         const response = await runLLM({ messages: history, tools });
 
-        await addMessages([response]);
-
         if (response.content) {
             loader.stop();
             logMessage(response);
+
+            // Attach any pending structured output to the final response before saving
+            if (pendingStructuredOutput) {
+                (response as any).structuredOutput = pendingStructuredOutput;
+                // If we have structured output, clear the text content to avoid duplication
+                // The structured output will handle the display
+                response.content = "";
+            }
+
+            await addMessages([response]);
             return getMessages();
+        }
+
+        // Only add tool call messages if they're not the final response
+        if (response.tool_calls) {
+            await addMessages([response]);
         }
 
         if (response.tool_calls) {
@@ -116,6 +142,12 @@ export const runAgent = async ({
             const toolResponse = await runTool(toolCall, userMessage);
             await saveToolResponse((toolCall as any).id, toolResponse);
             loader.update(`done: ${(toolCall as any).function.name}`);
+
+            // Parse structured output from tool response and store for later
+            const structuredOutput = parseToolResponse((toolCall as any).function.name, toolResponse);
+            if (structuredOutput) {
+                pendingStructuredOutput = structuredOutput;
+            }
         }
     }
 };

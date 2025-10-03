@@ -1,3 +1,5 @@
+import { StructuredOutput } from './structured';
+
 export interface ChatMessage {
     role: 'user' | 'assistant' | 'tool';
     content: string;
@@ -12,6 +14,7 @@ export interface ChatMessage {
             arguments: string;
         };
     }>;
+    structuredOutput?: StructuredOutput;
 }
 
 export interface ChatResponse {

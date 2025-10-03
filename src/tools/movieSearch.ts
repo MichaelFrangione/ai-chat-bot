@@ -1,4 +1,4 @@
-import type { ToolFn } from "../types";
+import type { ToolFn } from "../../types";
 import { z } from "zod";
 import { openai } from "../ai";
 import { queryMovies } from "../rag/query";
@@ -44,8 +44,58 @@ export const movieSearch: ToolFn<Args, string> = async ({ toolArgs, userMessage 
 
     const formattedResults = results.map((result: any) => {
         const metadata = result.metadata as MovieMetadata;
-        return { ...metadata, description: result.data };
+        return { ...metadata };
     });
 
-    return JSON.stringify(formattedResults, null, 2);
+    // Return structured format for movie recommendations
+    const structuredResponse = {
+        type: 'movie_recommendations',
+        data: {
+            recommendations: formattedResults.slice(0, 5), // Limit to top 5 recommendations
+            query: query,
+            genre: genre
+        },
+        metadata: {
+            title: 'Movie Recommendations',
+            description: `Found ${formattedResults.length} movie recommendations for "${query}"`
+        },
+        contextualMessage: await generateContextualMessage(formattedResults, query, genre, director)
+    };
+
+    return JSON.stringify(structuredResponse, null, 2);
 };
+
+async function generateContextualMessage(movies: any[], query: string, genre?: string | null, director?: string | null): Promise<string> {
+    if (movies.length === 0) {
+        return `I couldn't find any movies matching your criteria. Try adjusting your search terms or filters.`;
+    }
+
+    const topMovie = movies[0];
+
+    try {
+        const contextualPrompt = `Generate a contextual message for movie recommendations. 
+
+User's search: "${query}"
+Genre filter: ${genre || 'None'}
+Director filter: ${director || 'None'}
+Number of recommendations found: ${movies.length}
+Top pick: ${topMovie.title}
+
+Generate a natural, conversational message that introduces the top pick, and explain why this movie was chosen as the top recommendation based on its qualities and how it matches the user's search. Make it sound natural and engaging.`;
+
+        const contextualResponse = await openai.chat.completions.create({
+            model: "gpt-5-nano",
+            messages: [
+                { role: "system", content: "You are a helpful movie recommendation assistant. Generate natural, conversational messages for movie recommendations." },
+                { role: "user", content: contextualPrompt }
+            ],
+            temperature: 1
+        });
+
+        const contextualMessage = contextualResponse.choices[0]?.message?.content?.trim();
+        return contextualMessage || "";
+    } catch (error) {
+        console.error('Error generating contextual message:', error);
+        return "";
+    }
+}
