@@ -1,0 +1,1600 @@
+{
+  "experiments": [
+    {
+      "name": "reddit",
+      "sets": [
+        {
+          "runs": [
+            {
+              "input": "find me something interesting on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_Pw1S6ehQay06fETMZpUqYhFH",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-01T19:29:13.882Z"
+            },
+            {
+              "input": "hi",
+              "output": {
+                "role": "assistant",
+                "content": "Hi there! I’m your helpful assistant. What would you like to do today—chat, learn something new, solve a problem, or get help with a task? If you want, tell me a bit about your goal and any constraints, and I’ll tailor my help. For example, I can draft an email, plan a trip, explain a concept, or brainstorm ideas. What should we start with?",
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-01T19:29:13.882Z"
+            }
+          ],
+          "score": 0.5,
+          "createdAt": "2025-10-01T19:29:13.882Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "find me something interesting on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_f5Jw9Y7R2itlM60e53KcCcmk",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-01T19:30:13.627Z"
+            },
+            {
+              "input": "hi",
+              "output": {
+                "role": "assistant",
+                "content": "Hi there! How can I help today? Tell me what you’d like to do, and I’ll jump in. I can help with quick answers, drafting messages or documents, brainstorming ideas, planning a project, learning concepts, or just chatting. Here are some examples you can try:\n- Explain a topic in simple terms\n- Draft an email or message\n- Outline a study plan or project\n- Brainstorm ideas for a writing or art project\n- Help with coding or math problems\n\nWhat would you like to start with?",
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-01T19:30:13.627Z"
+            }
+          ],
+          "score": 0.5,
+          "createdAt": "2025-10-01T19:30:13.627Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "find me something interesting on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_rx3wAZ5pab8WJQlEdoGHdpaq",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T00:36:58.069Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T00:36:58.069Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "find me something interesting on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_fgKlZNbXNgl8XPSBeBs2ET08",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T13:57:22.480Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T13:57:22.481Z"
+        }
+      ]
+    },
+    {
+      "name": "dadJoke",
+      "sets": [
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_soyrRI8dCT5rZTy1UeKwYkO7",
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:00:11.634Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T14:00:11.634Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": "Here's a classic dad joke: Why did the scarecrow win an award? Because he was outstanding in his field. Want another?",
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-02T14:16:57.059Z"
+            },
+            {
+              "input": "generate an image of mars",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_8DOlYj6X9SefvGwoRjUStvaf",
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image",
+                      "arguments": "{\"prompt\":\"Hyper-realistic image of the planet Mars in deep space. Rusty red surface with extensive canyons, massive volcanoes, and white polar ice caps. A thin atmosphere halo around the limb, starry background, subtle neighboring celestial body in the distance. High-resolution, dramatic lighting, photo-realistic rendering.\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:16:57.059Z"
+            },
+            {
+              "input": "what is the most upvoted post on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_sCGc0hL6gaSdUtgaiOlmmwNu",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:16:57.059Z"
+            }
+          ],
+          "score": 0.6666666666666666,
+          "createdAt": "2025-10-02T14:16:57.059Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_0NQAftUq7FyY77gKkprI0bXI",
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:18:17.972Z"
+            },
+            {
+              "input": "generate an image of mars",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_s4cYmSh5bAk7tc6F72ojjqfv",
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image",
+                      "arguments": "{\"prompt\":\"A hyper-realistic, cinematic render of Mars' surface: rusty red terrain with pebbled rocks, swirling dust in the air, a tall shield volcano on the distant horizon, a vast canyon system cutting across the valley, and a pale orange sky with the sun visible in the background. Ultra-detailed, wide-angle perspective as if standing on the Martian ground, with subtle shadows and texture emphasizing the rugged landscape.\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:18:17.972Z"
+            },
+            {
+              "input": "what is the most upvoted post on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_2Jz0KvDVIqtxygPYbcWi0AYR",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:18:17.972Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T14:18:17.972Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_3beXU2UhzqJ4lxbFV8HZmk5P",
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:20:04.917Z"
+            },
+            {
+              "input": "generate an image of mars",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_5WITVyumbqSaE8oXyTXJhoT3",
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image",
+                      "arguments": "{\"prompt\":\"A photorealistic space render of the planet Mars, seen from orbit. The view shows a vivid reddish-orange surface with iron oxide dust, iconic features like Olympus Mons and Valles Marineris, and polar ice caps. Subtle atmospheric haze and a faint glow along the terminator, a starry background, cinematic lighting, high detail, 4K quality, 3D rendering.\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:20:04.917Z"
+            },
+            {
+              "input": "what is the most upvoted post on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_VCLwLVFmA2KQ9Ejn0oKHOf09",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:20:04.917Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T14:20:04.917Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": "Here's a classic dad joke: Why did the scarecrow win an award? Because he was outstanding in his field.\n\nWant another one?",
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-02T14:20:40.273Z"
+            },
+            {
+              "input": "generate an image of mars",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_hmMBOzMEnxNUMhlIaMmlyOxk",
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image",
+                      "arguments": "{\"prompt\":\"A high-resolution digital render of the planet Mars from space, showing its dusty red surface with large volcanic plains, canyons, and polar ice caps, a subtle atmospheric haze, and a starry background with a distant sun adding gentle lens flare.\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:20:40.274Z"
+            },
+            {
+              "input": "what is the most upvoted post on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_7kxpYJ1SeAGAJ4DeUa7H8mjU",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:20:40.274Z"
+            }
+          ],
+          "score": 0.6666666666666666,
+          "createdAt": "2025-10-02T14:20:40.274Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_DSPG8TVTS8VI82ar27c0Tylu",
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T18:43:37.812Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T18:43:37.812Z"
+        }
+      ]
+    },
+    {
+      "name": "generateImage",
+      "sets": [
+        {
+          "runs": [
+            {
+              "input": "generate an image of a sunset",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_ZIGPfxMoPf4Y963m4rAslfkY",
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image",
+                      "arguments": "{\"prompt\":\"A peaceful sunset over the ocean: a golden-orange sun dipping below the horizon, the sky painted with pink, purple, and orange hues, gentle waves reflecting the colors, and a distant shoreline silhouette.\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:05:54.787Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T14:05:54.787Z"
+        }
+      ]
+    },
+    {
+      "name": "allTools",
+      "sets": [
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_AROeVlMuQrMCDTAT8pCtewUm",
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:06.842Z"
+            },
+            {
+              "input": "generate an image of mars",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_qGnl4Qgra4gsgeqofImqpILE",
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image",
+                      "arguments": "{\"prompt\":\"A high-resolution, photorealistic image of Mars: vast red-orange desert plains, dramatic canyons, ice caps at the poles, a distant horizon, a small robotic rover in the foreground, subtle dust in the atmosphere, warm sunset glow over the landscape.\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:06.842Z"
+            },
+            {
+              "input": "what is the most upvoted post on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_giV1mN2wBAR1b5OPgu6Wn2GQ",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:06.842Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T14:21:06.842Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_nunWWR7Adit9pYMchbxCtgG9",
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:19.487Z"
+            },
+            {
+              "input": "generate an image of mars",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_pXbP55ZF8vQnd2Yl1IhIGI4E",
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image",
+                      "arguments": "{\"prompt\":\"A high-detail, cinematic illustration of the planet Mars. Rich rust-red terrain with sprawling deserts, jagged canyons (Valles Marineris) and a colossal shield volcano (Olympus Mons) in the distance. Dust devils and a thin polar ice cap visible. A small rover with a robotic arm and solar panels sits on a rocky foreground, with a pale sun lighting the scene and a distant starry sky. Realistic textures, dynamic lighting, and a sense of scale as if captured by a space agency mission photo.\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:19.487Z"
+            },
+            {
+              "input": "what is the most upvoted post on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_MJd6Uc9VxHdBccRw9GOjcJRe",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:19.487Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T14:21:19.487Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_GWamipO36NL8BUDDwbpATSwt",
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:30.588Z"
+            },
+            {
+              "input": "generate an image of mars",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_Ex1vMZeHPfVg4Q0hDNTWuQk0",
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image",
+                      "arguments": "{\"prompt\":\"A stunning, high-resolution depiction of the red planet: dusty orange-red plains, towering canyon systems, ancient volcanoes, jagged rocks, a thin hazy atmosphere, distant ice caps at the poles, a low sun that casts dramatic long shadows; cinematic, photorealistic style with subtle color grading.\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:30.588Z"
+            },
+            {
+              "input": "what is the most upvoted post on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_pttwAfdAOdooCugumyZzuiW2",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:30.588Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T14:21:30.588Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_jdbSyVZBXQj7vS1JqqxoWWvC",
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "dad_joke"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:44.622Z"
+            },
+            {
+              "input": "generate an image of mars",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_GoEwgsPPvmzxKbft6BN6RSf9",
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image",
+                      "arguments": "{\"prompt\":\"A high-resolution digital painting of the planet Mars from orbit. Rich rusty red surface with large volcanic plateau and canyon systems, including Olympus Mons and Valles Marineris. Subtle dust storms swirling across the landscape. A thin atmosphere with bluish glow near the limb, two small moons visible in the background, a distant star field and the Sun casting warm light. Realistic shadows, depth, and texture on rocky terrain and dust-covered plains.\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "generate_image"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:44.622Z"
+            },
+            {
+              "input": "what is the most upvoted post on reddit",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_9vBy1rzp2TA2SYjyZvMbTPck",
+                    "type": "function",
+                    "function": {
+                      "name": "reddit",
+                      "arguments": "{}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "reddit"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T14:21:44.622Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T14:21:44.622Z"
+        }
+      ]
+    },
+    {
+      "name": "movieSearch",
+      "sets": [
+        {
+          "runs": [
+            {
+              "input": "tell me a funny dad joke",
+              "output": {
+                "role": "assistant",
+                "content": "Here are a few classic dad-style jokes:\n\n- Why did the scarecrow win an award? Because he was outstanding in his field.\n- Why don't scientists trust atoms? Because they make up everything.\n- I would tell you a construction joke, but I’m still working on it.\n- I’m reading a book on anti-gravity. It’s impossible to put down.",
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-02T18:43:17.532Z"
+            }
+          ],
+          "score": 0,
+          "createdAt": "2025-10-02T18:43:17.532Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "suggest me a good action movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_HN4L8QKeKbtVohM3Vq6wjHSt",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"best action movies recommendation good action movie 2020s\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T18:45:32.002Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T18:45:32.002Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "suggest me a good action movie",
+              "output": {
+                "role": "assistant",
+                "content": "Sure. Here’s a solid action vibe you can go for, described with generic terms:\n\n- Action Film A: A lean, high-octane city-set thriller about a former covert operative who must stop a tech-enabled siege. Expect relentless car chases, practical stunt work, tight hand-to-hand combat, and minimal fluff. Runtime around 2 hours. Great if you want nonstop momentum and grounded action.\n\nIf you’d like a couple more vibes, I can tailor options without real titles:\n- Action Film B: Sci-fi flavored chase and rescue in a near-future city, with clever gadgets and big-set-piece sequences.\n- Action Film C: Elite unit infiltrates a fortress to pull off a daring hostage rescue, heavy on planning, teamwork, and brutal takedowns.\n\nWant me to pull concrete titles that fit these vibes and match your streaming service or rating preferences?",
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-02T18:55:59.464Z"
+            },
+            {
+              "input": "i want to find a movie about aliens coming to earth can you give me some recommendations?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_0RrItyJJnuP3tZHbKKSMP6UF",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"movies where aliens come to Earth recommendations\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T18:55:59.464Z"
+            },
+            {
+              "input": "find me some movies based in italy and heist themed movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_YJG1OCCe6lhny5k8WLBQQzM1",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"movies set in Italy and heist theme\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T18:55:59.464Z"
+            }
+          ],
+          "score": 0.6666666666666666,
+          "createdAt": "2025-10-02T18:55:59.464Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "suggest me a good action movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_DYcNE7ACxYHaVWsqCdIcRqXe",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"top-rated action movie recommendations with intense action and a strong lone hero, standalone plot\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T18:57:43.619Z"
+            },
+            {
+              "input": "i want to find a movie about aliens coming to earth can you give me some recommendations?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_9l2ryaWpXJTTei2051u67EhC",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"alien invasion earth movies, aliens coming to earth\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T18:57:43.620Z"
+            },
+            {
+              "input": "find me some movies based in italy and heist themed movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_eerJSu8GWJGvv7sUzGFBb81i",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"heist films set in Italy\"}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-02T18:57:43.620Z"
+            }
+          ],
+          "score": 1,
+          "createdAt": "2025-10-02T18:57:43.620Z"
+        }
+      ]
+    }
+  ]
+}
