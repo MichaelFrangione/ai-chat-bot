@@ -1,4 +1,4 @@
-import type { StructuredOutput, MovieRecommendationsOutput } from '../types/structured';
+import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput } from '../types/structured';
 
 export function parseAssistantResponse(content: string): StructuredOutput | null {
     // Try to parse JSON responses from assistant that contain recommendations
@@ -31,6 +31,9 @@ export function parseAssistantResponse(content: string): StructuredOutput | null
 export function parseToolResponse(toolName: string, response: string): StructuredOutput | null {
     if (toolName === 'movie_search') {
         return parseMovieSearchResponse(response);
+    }
+    if (toolName === 'generate_image') {
+        return parseImageGenerationResponse(response);
     }
     return null;
 }
@@ -216,6 +219,37 @@ function parseMovieSearchResponse(response: string): MovieRecommendationsOutput 
         }
     } catch (error) {
         console.error('Error parsing movie search response:', error);
+    }
+
+    return null;
+}
+
+function parseImageGenerationResponse(response: string): ImageGenerationOutput | null {
+    try {
+        const data = JSON.parse(response);
+
+        // Check if this is already a structured response from the tool
+        if (data.type === 'image_generation' && data.data && data.data.url) {
+            return data as ImageGenerationOutput;
+        }
+
+        // Handle legacy URL-only response
+        if (typeof data === 'string' && data.startsWith('http')) {
+            return {
+                type: 'image_generation',
+                data: {
+                    url: data,
+                    prompt: 'Generated image',
+                    alt: 'Generated image'
+                },
+                metadata: {
+                    title: 'Generated Image',
+                    description: 'Image generated successfully'
+                }
+            };
+        }
+    } catch (error) {
+        console.error('Error parsing image generation response:', error);
     }
 
     return null;

@@ -23,4 +23,18 @@ export interface MovieRecommendationsOutput {
     contextualMessage?: string;
 }
 
-export type StructuredOutput = MovieRecommendationsOutput;
+export interface ImageGenerationOutput {
+    type: 'image_generation';
+    data: {
+        url: string;
+        prompt: string;
+        alt?: string;
+    };
+    metadata: {
+        title: string;
+        description: string;
+    };
+    contextualMessage?: string;
+}
+
+export type StructuredOutput = MovieRecommendationsOutput | ImageGenerationOutput;

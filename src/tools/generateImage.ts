@@ -1,4 +1,4 @@
-import type { ToolFn } from "../types";
+import type { ToolFn } from "../../types";
 import { z } from "zod";
 import { openai } from "../ai";
 
@@ -22,5 +22,26 @@ export const generateImage: ToolFn<Args, string> = async ({ toolArgs, userMessag
         size: "1024x1024",
     });
 
-    return response?.data[0].url;
+    const imageUrl = response?.data?.[0]?.url;
+
+    if (!imageUrl) {
+        return "Error: Could not generate image";
+    }
+
+    // Return structured format for image generation
+    const structuredResponse = {
+        type: 'image_generation',
+        data: {
+            url: imageUrl,
+            prompt: toolArgs.prompt,
+            alt: `Generated image: ${toolArgs.prompt}`
+        },
+        metadata: {
+            title: 'Generated Image',
+            description: `Image generated from prompt: "${toolArgs.prompt}"`
+        },
+        contextualMessage: `I've generated an image based on your request. Here's what I created for you:`
+    };
+
+    return JSON.stringify(structuredResponse, null, 2);
 };

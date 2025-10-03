@@ -58,13 +58,14 @@ export const runAgent = async ({
 
         if (toolCall && toolCall.function.name === generateImageToolDefinition.name) {
             const approved = userMessage.toLowerCase() === 'yes' || userMessage.toLowerCase() === 'y';
+            let structuredOutput: any = null;
 
             if (approved) {
                 const toolResponse = await runTool(toolCall, userMessage);
                 await saveToolResponse(toolCall.id, toolResponse);
 
                 // Parse structured output from tool response
-                const structuredOutput = parseToolResponse(toolCall.function.name, toolResponse);
+                structuredOutput = parseToolResponse(toolCall.function.name, toolResponse);
                 if (structuredOutput) {
                     // Add structured output to the last message
                     const lastMessage = (await getMessages()).at(-1);
@@ -82,6 +83,14 @@ export const runAgent = async ({
             // Continue with the conversation
             const newHistory = await getMessages();
             const response = await runLLM({ messages: newHistory, tools });
+
+            // Attach structured output to the final response if available
+            if (structuredOutput) {
+                (response as any).structuredOutput = structuredOutput;
+                // Clear text content to avoid duplication
+                response.content = "";
+            }
+
             await addMessages([response]);
             return getMessages();
         }
