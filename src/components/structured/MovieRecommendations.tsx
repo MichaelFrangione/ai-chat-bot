@@ -1,30 +1,50 @@
 'use client';
 
 import { MovieRecommendationsOutput } from '@/types/structured';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface MovieRecommendationsProps {
     output: MovieRecommendationsOutput;
 }
 
 export default function MovieRecommendations({ output }: MovieRecommendationsProps) {
+    const { currentTheme } = useTheme();
     const { data } = output;
     const topPick = output.aiChosenMovie || data.recommendations[0];
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+        <div
+            className="rounded-xl p-6 shadow-lg border"
+            style={{
+                backgroundColor: currentTheme.colors.surface,
+                borderColor: currentTheme.colors.border
+            }}
+        >
             <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: currentTheme.colors.accent }}
+                    ></div>
+                    <h3
+                        className="text-lg font-semibold"
+                        style={{ color: currentTheme.colors.text }}
+                    >
                         {output.metadata.title}
                     </h3>
                 </div>
                 {output.contextualMessage ? (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <p
+                        className="text-sm leading-relaxed opacity-80"
+                        style={{ color: currentTheme.colors.text }}
+                    >
                         {output.contextualMessage}
                     </p>
                 ) : (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p
+                        className="text-sm opacity-80"
+                        style={{ color: currentTheme.colors.text }}
+                    >
                         {output.metadata.description}
                     </p>
                 )}
@@ -32,39 +52,74 @@ export default function MovieRecommendations({ output }: MovieRecommendationsPro
 
             {/* Top Pick Highlight */}
             {topPick && (
-                <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div
+                    className="mb-6 p-4 rounded-lg border"
+                    style={{
+                        background: `linear-gradient(to right, ${currentTheme.colors.gradient.from}20, ${currentTheme.colors.gradient.to}20)`,
+                        borderColor: currentTheme.colors.border
+                    }}
+                >
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                        <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-200">Top Pick</h4>
+                        <div
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: currentTheme.colors.accent }}
+                        ></div>
+                        <h4
+                            className="text-sm font-semibold"
+                            style={{ color: currentTheme.colors.text }}
+                        >
+                            Top Pick
+                        </h4>
                     </div>
                     <div className="flex items-start justify-between">
                         <div className="flex-1">
-                            <h5 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                            <h5
+                                className="text-lg font-bold mb-1"
+                                style={{ color: currentTheme.colors.text }}
+                            >
                                 {topPick.title}
                             </h5>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                            <p
+                                className="text-sm mb-2 opacity-80"
+                                style={{ color: currentTheme.colors.text }}
+                            >
                                 {topPick.year}
                                 {topPick.director && (
                                     <span className="ml-2">• Directed by {topPick.director}</span>
                                 )}
                             </p>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                            <p
+                                className="text-sm leading-relaxed opacity-90"
+                                style={{ color: currentTheme.colors.text }}
+                            >
                                 {topPick.description}
                             </p>
                         </div>
                         <div className="flex flex-col gap-2 ml-4">
                             {topPick.rating && (
-                                <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 px-3 py-1 rounded-full">
-                                    <span className="text-yellow-600 text-sm">★</span>
-                                    <span className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                                <div
+                                    className="flex items-center gap-1 px-3 py-1 rounded-full"
+                                    style={{
+                                        backgroundColor: `${currentTheme.colors.accent}20`,
+                                        color: currentTheme.colors.text
+                                    }}
+                                >
+                                    <span className="text-sm">★</span>
+                                    <span className="text-sm font-medium">
                                         {topPick.rating}/10
                                     </span>
                                 </div>
                             )}
                             {topPick.metascore && (
-                                <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full">
-                                    <span className="text-green-600 text-sm">M</span>
-                                    <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                                <div
+                                    className="flex items-center gap-1 px-3 py-1 rounded-full"
+                                    style={{
+                                        backgroundColor: `${currentTheme.colors.secondary}20`,
+                                        color: currentTheme.colors.text
+                                    }}
+                                >
+                                    <span className="text-sm">M</span>
+                                    <span className="text-sm font-medium">
                                         {topPick.metascore}
                                     </span>
                                 </div>
@@ -79,13 +134,26 @@ export default function MovieRecommendations({ output }: MovieRecommendationsPro
                 {data.recommendations
                     .filter(movie => !output.aiChosenMovie || movie.title !== output.aiChosenMovie.title)
                     .map((movie, index) => (
-                        <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow">
+                        <div
+                            key={index}
+                            className="rounded-lg p-4 border hover:shadow-md transition-shadow"
+                            style={{
+                                backgroundColor: currentTheme.colors.background,
+                                borderColor: currentTheme.colors.border
+                            }}
+                        >
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex-1">
-                                    <h5 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                                    <h5
+                                        className="text-lg font-bold mb-1"
+                                        style={{ color: currentTheme.colors.text }}
+                                    >
                                         {movie.title}
                                     </h5>
-                                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                    <div
+                                        className="flex items-center gap-2 text-sm mb-2 opacity-80"
+                                        style={{ color: currentTheme.colors.text }}
+                                    >
                                         <span>{movie.year}</span>
                                         {movie.director && (
                                             <>
@@ -99,7 +167,11 @@ export default function MovieRecommendations({ output }: MovieRecommendationsPro
                                             {movie.genre.split(',').map((genre, genreIndex) => (
                                                 <span
                                                     key={genreIndex}
-                                                    className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full"
+                                                    className="inline-block px-2 py-1 text-xs rounded-full"
+                                                    style={{
+                                                        backgroundColor: `${currentTheme.colors.primary}40`,
+                                                        color: currentTheme.colors.text
+                                                    }}
                                                 >
                                                     {genre.trim()}
                                                 </span>
@@ -109,17 +181,29 @@ export default function MovieRecommendations({ output }: MovieRecommendationsPro
                                 </div>
                                 <div className="flex gap-2 ml-4">
                                     {movie.rating && (
-                                        <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-full">
-                                            <span className="text-yellow-500 text-sm">★</span>
-                                            <span className="text-sm font-medium text-yellow-700 dark:text-yellow-300">
+                                        <div
+                                            className="flex items-center gap-1 px-2 py-1 rounded-full"
+                                            style={{
+                                                backgroundColor: `${currentTheme.colors.accent}20`,
+                                                color: currentTheme.colors.text
+                                            }}
+                                        >
+                                            <span className="text-sm">★</span>
+                                            <span className="text-sm font-medium">
                                                 {movie.rating}/10
                                             </span>
                                         </div>
                                     )}
                                     {movie.metascore && (
-                                        <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">
-                                            <span className="text-green-500 text-sm">M</span>
-                                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                                        <div
+                                            className="flex items-center gap-1 px-2 py-1 rounded-full"
+                                            style={{
+                                                backgroundColor: `${currentTheme.colors.secondary}20`,
+                                                color: currentTheme.colors.text
+                                            }}
+                                        >
+                                            <span className="text-sm">M</span>
+                                            <span className="text-sm font-medium">
                                                 {movie.metascore}
                                             </span>
                                         </div>
@@ -127,7 +211,10 @@ export default function MovieRecommendations({ output }: MovieRecommendationsPro
                                 </div>
                             </div>
 
-                            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                            <p
+                                className="text-sm leading-relaxed mb-3 opacity-90"
+                                style={{ color: currentTheme.colors.text }}
+                            >
                                 {movie.description}
                             </p>
 
@@ -136,7 +223,12 @@ export default function MovieRecommendations({ output }: MovieRecommendationsPro
                                     {movie.tags.map((tag, tagIndex) => (
                                         <span
                                             key={tagIndex}
-                                            className="px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-full"
+                                            className="px-2 py-1 text-xs rounded-full"
+                                            style={{
+                                                backgroundColor: currentTheme.colors.surface,
+                                                color: currentTheme.colors.text,
+                                                borderColor: currentTheme.colors.border
+                                            }}
                                         >
                                             {tag}
                                         </span>

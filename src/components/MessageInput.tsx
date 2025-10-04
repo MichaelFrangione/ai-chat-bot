@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface MessageInputProps {
     onSendMessage: (message: string) => void;
@@ -8,6 +9,7 @@ interface MessageInputProps {
 }
 
 export default function MessageInput({ onSendMessage, disabled }: MessageInputProps) {
+    const { currentTheme } = useTheme();
     const [message, setMessage] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -26,7 +28,13 @@ export default function MessageInput({ onSendMessage, disabled }: MessageInputPr
     };
 
     return (
-        <div className="border-t border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-800">
+        <div
+            className="border-t p-6"
+            style={{
+                borderColor: currentTheme.colors.border,
+                backgroundColor: currentTheme.colors.surface
+            }}
+        >
             <form onSubmit={handleSubmit} className="flex gap-3">
                 <div className="flex-1 relative">
                     <input
@@ -36,7 +44,12 @@ export default function MessageInput({ onSendMessage, disabled }: MessageInputPr
                         onKeyPress={handleKeyPress}
                         placeholder="Type your message..."
                         disabled={disabled}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+                        className="w-full px-4 py-3 border rounded-xl focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm"
+                        style={{
+                            borderColor: currentTheme.colors.border,
+                            backgroundColor: currentTheme.colors.surface,
+                            color: currentTheme.colors.text
+                        }}
                     />
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                         <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +60,11 @@ export default function MessageInput({ onSendMessage, disabled }: MessageInputPr
                 <button
                     type="submit"
                     disabled={disabled || !message.trim()}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm font-medium"
+                    className="px-6 py-3 text-white rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm font-medium border"
+                    style={{
+                        backgroundColor: currentTheme.colors.componentColor,
+                        borderColor: currentTheme.colors.border
+                    }}
                 >
                     <span className="flex items-center gap-2">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

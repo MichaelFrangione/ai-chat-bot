@@ -11,6 +11,7 @@ A modern AI-powered chatbot built with Next.js and OpenAI's GPT models. The agen
 - **Approval System**: User approval for sensitive operations like image generation
 - **Memory Management**: Persistent conversation history
 - **RAG Integration**: Vector search for movie recommendations
+- **Theme Support**: Multiple visual themes with dynamic switching
 
 ### Available Tools
 
@@ -31,6 +32,23 @@ A modern AI-powered chatbot built with Next.js and OpenAI's GPT models. The agen
 4. **🔗 Reddit Posts**
    - Browse trending posts from Reddit
    - Shows title, subreddit, author, and upvotes
+
+### Theme System
+
+The application includes a comprehensive theme system with 5 distinct visual themes:
+
+1. **Default** - Clean blue and purple theme
+2. **Eight Bit** - Retro neon green/magenta with VT323 font
+3. **Autumn** - Warm pastel colors with cozy vibes
+4. **Forest** - Deep forest greens with earthy tones
+5. **Monochrome** - Clean black, white, and gray tones
+
+**Theme Features:**
+- **Dynamic Switching**: Change themes instantly via dropdown
+- **Persistent Selection**: Theme choice is remembered across sessions
+- **Custom Fonts**: Eight Bit theme uses VT323 retro font
+- **Responsive Design**: All themes work across different screen sizes
+- **Hover Effects**: Interactive theme picker with smooth transitions
 
 ### Development Features
 - **Evaluation Framework**: Automated testing for all tools
@@ -105,8 +123,9 @@ Visit `http://localhost:3000`
 ### Web Interface
 
 1. Open `http://localhost:3000`
-2. Start chatting with the AI
-3. Try these examples:
+2. **Choose a Theme**: Use the theme dropdown to select your preferred visual style
+3. Start chatting with the AI
+4. Try these examples:
    - "Find me some action movies from the 90s"
    - "Generate an image of a futuristic city"
    - "Tell me a dad joke"
@@ -152,7 +171,13 @@ chatbot-agent/
 │   │   ├── MessageBubble.tsx # Message display
 │   │   ├── MessageInput.tsx  # Input component
 │   │   ├── ApprovalDialog.tsx # Approval workflow
+│   │   ├── ThemeSwitcher.tsx # Theme selection
+│   │   ├── ThemeWrapper.tsx  # Theme context provider
 │   │   └── structured/       # Output components
+│   ├── constants/            # Theme definitions
+│   │   └── themes.ts         # Theme configurations
+│   ├── contexts/             # React contexts
+│   │   └── ThemeContext.tsx  # Theme state management
 │   ├── tools/                # Agent tools
 │   │   ├── index.ts          # Tool exports
 │   │   ├── movieSearch.ts    # Movie search
@@ -186,6 +211,8 @@ chatbot-agent/
 - **Memory**: `src/memory.ts`
 - **UI**: `src/components/`
 - **API**: `src/app/api/`
+- **Themes**: `src/constants/themes.ts`
+- **Theme Context**: `src/contexts/ThemeContext.tsx`
 
 ## 📝 License
 

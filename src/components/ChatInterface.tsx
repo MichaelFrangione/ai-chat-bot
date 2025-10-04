@@ -7,8 +7,20 @@ import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import ApprovalDialog from './ApprovalDialog';
 import { DEV_CONFIG, toggleDevMode } from '@/config/dev';
+import { useTheme } from '@/contexts/ThemeContext';
 
-export default function ChatInterface() {
+interface ChatInterfaceProps {
+    themeClasses: {
+        background: string;
+        text: string;
+        surface: string;
+        border: string;
+        gradient: string;
+    };
+}
+
+export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
+    const { currentTheme } = useTheme();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [approvalRequest, setApprovalRequest] = useState<{
@@ -106,12 +118,34 @@ export default function ChatInterface() {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-12rem)] bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
+        <div
+            className="flex flex-col h-[calc(100vh-16rem)] rounded-xl shadow-xl border overflow-hidden"
+            style={{
+                backgroundColor: currentTheme.colors.surface,
+                borderColor: currentTheme.colors.border
+            }}
+        >
+            <div
+                className="px-6 py-4 border-b"
+                style={{
+                    background: `linear-gradient(to right, ${currentTheme.colors.gradient.from}, ${currentTheme.colors.gradient.to})`,
+                    borderBottomColor: currentTheme.colors.border
+                }}
+            >
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-white font-semibold text-lg">AI Assistant</h2>
-                        <p className="text-blue-100 text-sm">Powered by advanced AI with tools</p>
+                        <h2
+                            className="font-semibold text-lg"
+                            style={{ color: currentTheme.colors.headerText }}
+                        >
+                            AI Assistant
+                        </h2>
+                        <p
+                            className="text-sm opacity-80"
+                            style={{ color: currentTheme.colors.headerText }}
+                        >
+                            Powered by advanced AI with tools
+                        </p>
                     </div>
                     <button
                         onClick={handleToggleDevMode}
@@ -129,7 +163,7 @@ export default function ChatInterface() {
             <MessageList
                 messages={messages}
                 isLoading={isLoading}
-                messagesEndRef={messagesEndRef}
+                messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
             />
 
             <MessageInput

@@ -1,5 +1,7 @@
 'use client';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 interface ApprovalDialogProps {
     request: {
         toolName: string;
@@ -11,24 +13,48 @@ interface ApprovalDialogProps {
 }
 
 export default function ApprovalDialog({ request, onApprove, onClose }: ApprovalDialogProps) {
+    const { currentTheme } = useTheme();
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+            <div
+                className="rounded-lg p-6 max-w-md w-full mx-4"
+                style={{ backgroundColor: currentTheme.colors.surface }}
+            >
+                <h3
+                    className="text-lg font-semibold mb-4"
+                    style={{ color: currentTheme.colors.text }}
+                >
                     Tool Approval Required
                 </h3>
 
                 <div className="mb-4">
-                    <p className="text-gray-700 dark:text-gray-300 mb-2">
+                    <p
+                        className="mb-2 opacity-80"
+                        style={{ color: currentTheme.colors.text }}
+                    >
                         {request.message}
                     </p>
 
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded p-3 text-sm">
-                        <div className="font-medium text-gray-900 dark:text-white">
+                    <div
+                        className="rounded p-3 text-sm"
+                        style={{
+                            backgroundColor: currentTheme.colors.background,
+                            borderColor: currentTheme.colors.border,
+                            borderWidth: '1px'
+                        }}
+                    >
+                        <div
+                            className="font-medium"
+                            style={{ color: currentTheme.colors.text }}
+                        >
                             Tool: {request.toolName}
                         </div>
                         {request.toolArgs && (
-                            <div className="mt-2 text-gray-600 dark:text-gray-400">
+                            <div
+                                className="mt-2 opacity-70"
+                                style={{ color: currentTheme.colors.text }}
+                            >
                                 <pre className="whitespace-pre-wrap text-xs">
                                     {JSON.stringify(request.toolArgs, null, 2)}
                                 </pre>

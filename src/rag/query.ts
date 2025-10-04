@@ -20,9 +20,13 @@ export const queryMovies = async ({
         const filterParts = Object.entries(filters)
             .filter(([_, value]) => value !== undefined)
             .map(([key, value]) => {
-                // Special handling for genre filter - use CONTAINS for comma-separated genres
+                // Special handling for genre filter - use GLOB for pattern matching
                 if (key === 'genre') {
-                    return `genre CONTAINS '${value}'`;
+                    return `genre GLOB '*${value}*'`;
+                }
+                // Special handling for numeric fields like year
+                if (key === 'year' && typeof value === 'number') {
+                    return `${key}=${value}`;
                 }
                 return `${key}='${value}'`;
             });
@@ -32,7 +36,7 @@ export const queryMovies = async ({
         }
     }
 
-    const results = await index.query({
+    console.log('Query params:', {
         data: query,
         topK,
         filter: filterStr || undefined,
@@ -40,5 +44,27 @@ export const queryMovies = async ({
         includeData: true,
     });
 
-    return results;
+    try {
+        // Test with a simple filter first
+        const queryParams: any = {
+            data: query,
+            topK,
+            includeMetadata: true,
+            includeData: true,
+        };
+
+        // Add filter if it exists
+        if (filterStr) {
+            queryParams.filter = filterStr;
+        }
+
+        console.log('Final query params:', queryParams);
+
+        const results = await index.query(queryParams);
+
+        return results;
+    } catch (error) {
+        console.error('Upstash query error:', error);
+        throw error;
+    }
 };

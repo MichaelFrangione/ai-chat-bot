@@ -12,6 +12,7 @@ export const movieSearchToolDefinition = {
         ),
         genre: z.string().nullable().describe('Filter movies by genre (e.g., "Action", "Comedy", "Sci-Fi"). Only use when user specifically mentions a genre by name.'),
         director: z.string().nullable().describe('Filter movies by director name (e.g., "Christopher Nolan", "Steven Spielberg"). Only use when user specifically mentions a director by name.'),
+        year: z.number().nullable().describe('Filter movies by year (e.g., 1995, 2000). Only use when user specifically mentions a year or decade (e.g., "90s" = 1990s, "2000s" = 2000s).'),
         limit: z.number().nullable().describe('Number of movies to return. Use 1 for single recommendations (like "the best", "ultimate", "top pick"). Use null or higher numbers for multiple recommendations.'),
     }),
     description: `ALWAYS use this tool when users ask about movies, want movie recommendations, suggestions, or ask to find specific movies. This tool searches a database of movies with metadata including title, year, genre, director, actors, rating, votes, revenue, metascore, and descriptions. Use for ANY movie-related query. 
@@ -19,6 +20,7 @@ export const movieSearchToolDefinition = {
 FILTERING GUIDELINES:
 - Use director filter when user mentions a specific director by name
 - Use genre filter when user mentions a specific genre by name  
+- Use year filter when user mentions a specific year (e.g., 1995) or decade (e.g., "90s" = 1990s, "2000s" = 2000s)
 - Use limit=1 when user asks for a single recommendation ("the best", "ultimate", "top pick", "recommend me one movie")
 - Use limit=null or higher when user asks for multiple recommendations ("recommendations", "suggestions", "list of movies")
 - The vector search is very effective at finding relevant movies based on descriptions and themes`,
@@ -28,11 +30,12 @@ type Args = z.infer<typeof movieSearchToolDefinition.parameters>;
 
 export const movieSearch: ToolFn<Args, string> = async ({ toolArgs, userMessage }: { toolArgs: Args; userMessage: string; }) => {
 
-    const { query, genre, director, limit } = toolArgs;
+    const { query, genre, director, year, limit } = toolArgs;
 
     const filters = {
         ...(genre && genre !== null && { genre }),
         ...(director && director !== null && { director }),
+        ...(year && year !== null && { year }),
     };
 
     // Determine how many results to return
@@ -41,6 +44,7 @@ export const movieSearch: ToolFn<Args, string> = async ({ toolArgs, userMessage 
 
     console.log('filters', filters);
     console.log('limit', actualLimit, 'isSingle', isSingleRecommendation);
+    console.log('toolArgs.limit:', limit);
 
     let results;
 
@@ -51,14 +55,43 @@ export const movieSearch: ToolFn<Args, string> = async ({ toolArgs, userMessage 
             topK: Math.max(actualLimit, 3) // Get at least 3 results for analysis even if we only want 1
         });
     } catch (e) {
-        console.error(e);
-        return `Error: Could not query the db to get movies`;
+        console.error('Movie search error:', e);
+        return JSON.stringify({
+            type: 'movie_recommendations',
+            metadata: {
+                title: 'Movie Search Error',
+                description: 'Unable to search movies at this time'
+            },
+            data: {
+                recommendations: []
+            },
+            contextualMessage: 'Sorry, I encountered an error while searching for movies. Please try again later.'
+        });
     }
 
     const formattedResults = results.map((result: any) => {
         const metadata = result.metadata as MovieMetadata;
         return { ...metadata };
     });
+
+    // Handle empty results
+    if (formattedResults.length === 0) {
+        return JSON.stringify({
+            type: 'movie_recommendations',
+            metadata: {
+                title: 'No Movies Found',
+                description: 'No movies match your search criteria'
+            },
+            data: {
+                recommendations: [],
+                query: query,
+                genre: genre,
+                year: year,
+                director: director
+            },
+            contextualMessage: `Sorry, I couldn't find any movies matching your search for "${query}". Note: My movie database contains films from 2006 onwards. If you're looking for older movies, try searching for recent films with similar themes or genres.`
+        });
+    }
 
     // Return structured format for movie recommendations
     const structuredResponse = {
@@ -110,7 +143,7 @@ Example response: "The Matrix"`;
                 { role: "system", content: "You are a movie recommendation expert. Pick the best movie from the list and respond with only the title in quotes." },
                 { role: "user", content: choicePrompt }
             ],
-            temperature: 0.3
+            temperature: 1
         });
 
         const chosenTitle = choiceResponse.choices[0]?.message?.content?.trim().replace(/"/g, '');
