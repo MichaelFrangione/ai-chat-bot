@@ -3,7 +3,7 @@ import { runApprovalCheck, runLLM } from './llm';
 import { showLoader, logMessage } from './ui';
 import { runTool } from './toolRunner';
 import { generateImageToolDefinition } from './tools/generateImage';
-import { parseToolResponse } from './lib/structured-parser';
+import { parseToolResponse, parseAssistantResponse } from './lib/structured-parser';
 import type { AIMessage } from '../types';
 
 const handleImageApprovalFlow = async (
@@ -113,12 +113,25 @@ export const runAgent = async ({
             loader.stop();
             logMessage(response);
 
-            // Attach any pending structured output to the final response before saving
+            console.log('Assistant response content:', response.content);
+            console.log('Pending structured output:', pendingStructuredOutput);
+
             if (pendingStructuredOutput) {
+                console.log('Using pending structured output from tool');
+                // Attach any pending structured output from tools
                 (response as any).structuredOutput = pendingStructuredOutput;
                 // If we have structured output, clear the text content to avoid duplication
-                // The structured output will handle the display
                 response.content = "";
+            } else {
+                console.log('No pending structured output, checking assistant response');
+                // Only check for assistant structured output if no tool output is pending
+                const assistantStructuredOutput = parseAssistantResponse(response.content);
+                if (assistantStructuredOutput) {
+                    console.log('Found assistant structured output:', assistantStructuredOutput.type);
+                    (response as any).structuredOutput = assistantStructuredOutput;
+                    // Clear the text content to avoid duplication
+                    response.content = "";
+                }
             }
 
             await addMessages([response]);

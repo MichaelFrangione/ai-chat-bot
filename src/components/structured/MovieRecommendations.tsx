@@ -8,7 +8,7 @@ interface MovieRecommendationsProps {
 
 export default function MovieRecommendations({ output }: MovieRecommendationsProps) {
     const { data } = output;
-    const topPick = data.recommendations[0];
+    const topPick = output.aiChosenMovie || data.recommendations[0];
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
@@ -76,66 +76,75 @@ export default function MovieRecommendations({ output }: MovieRecommendationsPro
 
             {/* All Recommendations */}
             <div className="space-y-4">
-                {data.recommendations.slice(1).map((movie, index) => (
-                    <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow">
-                        <div className="flex items-start justify-between mb-3">
-                            <div className="flex-1">
-                                <h5 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                                    {movie.title}
-                                </h5>
-                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                    <span>{movie.year}</span>
-                                    {movie.director && (
-                                        <>
-                                            <span>•</span>
-                                            <span>Directed by {movie.director}</span>
-                                        </>
+                {data.recommendations
+                    .filter(movie => !output.aiChosenMovie || movie.title !== output.aiChosenMovie.title)
+                    .map((movie, index) => (
+                        <div key={index} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow">
+                            <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1">
+                                    <h5 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                                        {movie.title}
+                                    </h5>
+                                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                        <span>{movie.year}</span>
+                                        {movie.director && (
+                                            <>
+                                                <span>•</span>
+                                                <span>Directed by {movie.director}</span>
+                                            </>
+                                        )}
+                                    </div>
+                                    {movie.genre && (
+                                        <div className="flex flex-wrap gap-1">
+                                            {movie.genre.split(',').map((genre, genreIndex) => (
+                                                <span
+                                                    key={genreIndex}
+                                                    className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full"
+                                                >
+                                                    {genre.trim()}
+                                                </span>
+                                            ))}
+                                        </div>
                                     )}
                                 </div>
-                                {movie.genre && (
-                                    <span className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
-                                        {movie.genre}
-                                    </span>
-                                )}
+                                <div className="flex gap-2 ml-4">
+                                    {movie.rating && (
+                                        <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-full">
+                                            <span className="text-yellow-500 text-sm">★</span>
+                                            <span className="text-sm font-medium text-yellow-700 dark:text-yellow-300">
+                                                {movie.rating}/10
+                                            </span>
+                                        </div>
+                                    )}
+                                    {movie.metascore && (
+                                        <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">
+                                            <span className="text-green-500 text-sm">M</span>
+                                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                                                {movie.metascore}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                            <div className="flex gap-2 ml-4">
-                                {movie.rating && (
-                                    <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-full">
-                                        <span className="text-yellow-500 text-sm">★</span>
-                                        <span className="text-sm font-medium text-yellow-700 dark:text-yellow-300">
-                                            {movie.rating}/10
+
+                            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                                {movie.description}
+                            </p>
+
+                            {movie.tags && movie.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1">
+                                    {movie.tags.map((tag, tagIndex) => (
+                                        <span
+                                            key={tagIndex}
+                                            className="px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-full"
+                                        >
+                                            {tag}
                                         </span>
-                                    </div>
-                                )}
-                                {movie.metascore && (
-                                    <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">
-                                        <span className="text-green-500 text-sm">M</span>
-                                        <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                                            {movie.metascore}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-
-                        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
-                            {movie.description}
-                        </p>
-
-                        {movie.tags && movie.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1">
-                                {movie.tags.map((tag, tagIndex) => (
-                                    <span
-                                        key={tagIndex}
-                                        className="px-2 py-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-full"
-                                    >
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                ))}
+                    ))}
             </div>
         </div>
     );

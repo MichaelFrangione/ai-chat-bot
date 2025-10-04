@@ -1,25 +1,23 @@
 import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput, RedditPostsOutput } from '../types/structured';
 
 export function parseAssistantResponse(content: string): StructuredOutput | null {
-    // Try to parse JSON responses from assistant that contain recommendations
+    // Try to parse JSON responses from assistant
     try {
         const jsonResponse = JSON.parse(content);
 
-        // Check if this is a movie recommendations response
-        if (jsonResponse.recommendations && Array.isArray(jsonResponse.recommendations)) {
-            return {
-                type: 'movie_recommendations',
-                data: {
-                    recommendations: jsonResponse.recommendations,
-                    genre: jsonResponse.genre
-                },
-                metadata: {
-                    title: 'Movie Recommendations',
-                    description: `Found ${jsonResponse.recommendations.length} movie recommendations`
-                },
-                contextualMessage: jsonResponse.contextualMessage
-            };
+        // Check if this is a structured output format
+        if (jsonResponse.type === 'reddit_posts' && jsonResponse.data && jsonResponse.data.posts) {
+            return jsonResponse as RedditPostsOutput;
         }
+
+        if (jsonResponse.type === 'movie_recommendations' && jsonResponse.data && jsonResponse.data.recommendations) {
+            return jsonResponse as MovieRecommendationsOutput;
+        }
+
+        if (jsonResponse.type === 'image_generation' && jsonResponse.data && jsonResponse.data.url) {
+            return jsonResponse as ImageGenerationOutput;
+        }
+
     } catch (error) {
         // Not JSON, continue with normal parsing
     }

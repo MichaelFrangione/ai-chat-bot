@@ -21,6 +21,7 @@ export interface MovieRecommendationsOutput {
         description: string;
     };
     contextualMessage?: string;
+    aiChosenMovie?: MovieRecommendation;
 }
 
 export interface ImageGenerationOutput {
@@ -43,7 +44,11 @@ export interface RedditPost {
     subreddit: string;
     author: string;
     upvotes: number;
+    comments: number;
     redditUrl?: string;
+    thumbnail?: string | null;
+    isVideo?: boolean;
+    domain?: string;
 }
 
 export interface RedditPostsOutput {

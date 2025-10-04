@@ -19,7 +19,13 @@ export const queryMovies = async ({
     if (filters) {
         const filterParts = Object.entries(filters)
             .filter(([_, value]) => value !== undefined)
-            .map(([key, value]) => `${key}='${value}'`);
+            .map(([key, value]) => {
+                // Special handling for genre filter - use CONTAINS for comma-separated genres
+                if (key === 'genre') {
+                    return `genre CONTAINS '${value}'`;
+                }
+                return `${key}='${value}'`;
+            });
 
         if (filterParts.length > 0) {
             filterStr = filterParts.join(' AND ');

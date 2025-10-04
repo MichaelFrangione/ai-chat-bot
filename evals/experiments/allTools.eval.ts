@@ -18,7 +18,7 @@ const createToolCallMessage = (toolName: string) => ({
     ],
 });
 
-const allTools = [dadJokeToolDefinition, generateImageToolDefinition, redditToolDefinition];
+const allTools = [dadJokeToolDefinition, generateImageToolDefinition, redditToolDefinition, movieSearchToolDefinition];
 
 runEval('allTools', {
     task: (input) =>
