@@ -1,4 +1,4 @@
-import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput } from '../types/structured';
+import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput, RedditPostsOutput } from '../types/structured';
 
 export function parseAssistantResponse(content: string): StructuredOutput | null {
     // Try to parse JSON responses from assistant that contain recommendations
@@ -34,6 +34,9 @@ export function parseToolResponse(toolName: string, response: string): Structure
     }
     if (toolName === 'generate_image') {
         return parseImageGenerationResponse(response);
+    }
+    if (toolName === 'reddit') {
+        return parseRedditResponse(response);
     }
     return null;
 }
@@ -250,6 +253,21 @@ function parseImageGenerationResponse(response: string): ImageGenerationOutput |
         }
     } catch (error) {
         console.error('Error parsing image generation response:', error);
+    }
+
+    return null;
+}
+
+function parseRedditResponse(response: string): RedditPostsOutput | null {
+    try {
+        const data = JSON.parse(response);
+
+        // Check if this is a structured response from the tool
+        if (data.type === 'reddit_posts' && data.data && data.data.posts) {
+            return data as RedditPostsOutput;
+        }
+    } catch (error) {
+        console.error('Error parsing Reddit response:', error);
     }
 
     return null;

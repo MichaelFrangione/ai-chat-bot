@@ -37,4 +37,27 @@ export interface ImageGenerationOutput {
     contextualMessage?: string;
 }
 
-export type StructuredOutput = MovieRecommendationsOutput | ImageGenerationOutput;
+export interface RedditPost {
+    title: string;
+    link: string;
+    subreddit: string;
+    author: string;
+    upvotes: number;
+    redditUrl?: string;
+}
+
+export interface RedditPostsOutput {
+    type: 'reddit_posts';
+    data: {
+        posts: RedditPost[];
+        subreddit?: string;
+        sortBy?: string;
+    };
+    metadata: {
+        title: string;
+        description: string;
+    };
+    contextualMessage?: string;
+}
+
+export type StructuredOutput = MovieRecommendationsOutput | ImageGenerationOutput | RedditPostsOutput;
