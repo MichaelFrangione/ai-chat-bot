@@ -5,6 +5,8 @@ import { Michroma } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import ThemeWrapper from '@/components/ThemeWrapper';
+import { Analytics } from "@vercel/analytics/next";
+
 
 const inter = Inter({ subsets: ['latin'] });
 const vt323 = VT323({
@@ -34,6 +36,7 @@ export default function RootLayout({
                 <ThemeProvider>
                     <ThemeWrapper>
                         {children}
+                        <Analytics />
                     </ThemeWrapper>
                 </ThemeProvider>
             </body>
