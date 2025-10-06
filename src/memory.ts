@@ -99,42 +99,81 @@ export const addMessages = async (messages: AIMessage[], sessionId?: string) => 
     const db = await getDb(sessionId);
     db.data.messages.push(...messages.map(addMetadata));
 
+    // Keep only the last 20 messages, but ensure tool calls are never orphaned
     if (db.data.messages.length >= 20) {
-        // Find messages to remove, but ensure we don't orphan tool calls
+        // Start by trying to remove 10 messages (keep last 10)
         let messagesToRemove = 10;
         const messagesToCheck = db.data.messages.slice(0, messagesToRemove);
 
-        // Check if any of the messages to be removed are tool calls
-        const hasToolCalls = messagesToCheck.some(msg => (msg as any).tool_calls && (msg as any).tool_calls.length > 0);
-
-        if (hasToolCalls) {
-            // If we have tool calls, only remove messages up to the last tool call
-            // to ensure we don't orphan tool responses
-            const lastToolCallIndex = messagesToCheck.findLastIndex(msg => (msg as any).tool_calls && (msg as any).tool_calls.length > 0);
-            if (lastToolCallIndex >= 0) {
-                // Find the corresponding tool response
-                const toolCallId = (messagesToCheck[lastToolCallIndex] as any).tool_calls?.[0]?.id;
-                const toolResponseIndex = db.data.messages.findIndex(msg => (msg as any).tool_call_id === toolCallId);
-
-                if (toolResponseIndex > lastToolCallIndex) {
-                    // Only remove messages up to and including the tool response
-                    messagesToRemove = toolResponseIndex + 1;
+        // Find all tool calls in the range to be removed
+        const toolCallsInRange = [];
+        for (let i = 0; i < messagesToCheck.length; i++) {
+            const msg = messagesToCheck[i];
+            if (msg.role === 'assistant' && (msg as any).tool_calls) {
+                for (const toolCall of (msg as any).tool_calls) {
+                    toolCallsInRange.push({
+                        toolCallId: toolCall.id,
+                        messageIndex: i
+                    });
                 }
+            }
+        }
+
+        // For each tool call, ensure its response is also in the range
+        if (toolCallsInRange.length > 0) {
+            let maxSafeIndex = -1;
+
+            for (const { toolCallId, messageIndex } of toolCallsInRange) {
+                // Find the corresponding tool response
+                const toolResponseIndex = db.data.messages.findIndex(msg =>
+                    msg.role === 'tool' && (msg as any).tool_call_id === toolCallId
+                );
+
+                if (toolResponseIndex >= 0) {
+                    // Only remove up to and including the tool response
+                    maxSafeIndex = Math.max(maxSafeIndex, toolResponseIndex);
+                } else {
+                    // If no response found, don't remove the tool call
+                    maxSafeIndex = Math.max(maxSafeIndex, messageIndex - 1);
+                }
+            }
+
+            if (maxSafeIndex >= 0) {
+                messagesToRemove = maxSafeIndex + 1;
             }
         }
 
         const oldestMessages = db.data.messages.slice(0, messagesToRemove).map(removeMetadata);
 
-        // Create a summary that includes existing summary + new messages
+        // Filter out tool calls and tool responses for summarization
+        const filteredMessages = oldestMessages.filter(msg =>
+            msg.role === 'user' ||
+            (msg.role === 'assistant' && msg.content && !(msg as any).tool_calls) ||
+            (msg.role === 'assistant' && msg.content && !(msg as any).structuredOutput)
+        );
+
+        // Only include previous summary if it's not too verbose (avoid Reddit data dumps)
+        const shouldIncludePreviousSummary = db.data.summary &&
+            db.data.summary.length < 500 &&
+            !db.data.summary.includes('Reddit posts') &&
+            !db.data.summary.includes('upvotes');
+
         const messagesToSummarize = [
-            ...(db.data.summary ? [{ role: 'user' as const, content: `Previous conversation summary: ${db.data.summary}` }] : []),
-            ...oldestMessages
+            ...(shouldIncludePreviousSummary ? [{ role: 'user' as const, content: `Previous conversation summary: ${db.data.summary}` }] : []),
+            ...filteredMessages
         ];
 
-        const newSummary = await summarizeMessages(messagesToSummarize, sessionId);
+        // Create summary of filtered conversation
+        try {
+            const summary = await summarizeMessages(messagesToSummarize, sessionId);
+            db.data.summary = summary;
+            console.log(`[MEMORY] Summary created: ${summary.substring(0, 100)}...`);
+        } catch (error) {
+            console.error('[MEMORY] Summarization failed:', error);
+            // Fallback: just remove old messages without summarization
+            console.log(`[MEMORY] Fallback: removing ${messagesToRemove} old messages without summarization`);
+        }
 
-        // Update the summary and remove the old messages
-        db.data.summary = newSummary;
         db.data.messages = db.data.messages.slice(messagesToRemove);
     }
 

@@ -68,19 +68,41 @@ export const runApprovalCheck = async (userMessage: string) => {
 };
 
 export const summarizeMessages = async (messages: AIMessage[], sessionId?: string) => {
+    // Add timeout to prevent hanging during summarization
+    const timeoutPromise = new Promise<string>((_, reject) =>
+        setTimeout(() => reject(new Error('Summarization timeout')), 30000)
+    );
 
-    const response = await runLLM({
-        systemPrompt: `Create a comprehensive conversation summary that preserves ALL important personal information. You MUST include:\n' +
-                    '- User\'s name (if mentioned)\n' +
-                    '- Birthday, age, or personal dates\n' +
-                    '- Plans, goals, or future intentions\n' +
-                    '- Preferences, likes, dislikes\n' +
-                    '- Important decisions or outcomes\n' +
-                    '- Technical context or tools used\n\n' +
-                    'If there is a previous summary, merge it with new information. NEVER lose personal details like names, birthdays, or plans. Be thorough in preserving context.`,
-        messages,
-        sessionId,
-    });
+    try {
+        // Create a proper message structure for summarization
+        const summarizationMessages = [
+            {
+                role: 'user' as const,
+                content: `Please summarize this conversation:\n\n${messages.map(msg =>
+                    `${msg.role}: ${msg.content || '[tool call or structured output]'}`
+                ).join('\n')}`
+            }
+        ];
 
-    return response.content || '';
+        const response = await Promise.race([
+            runLLM({
+                systemPrompt: `Create a concise conversation summary focusing on the actual dialogue between user and assistant. Include:
+- What the user asked for or discussed
+- Key topics and user preferences mentioned
+- Important decisions or choices made
+- Any ongoing themes or context
+
+Do NOT include detailed tool outputs, technical details, or raw data. Focus on the human conversation flow and what was actually discussed between user and assistant.`,
+                messages: summarizationMessages,
+                sessionId,
+            }),
+            timeoutPromise
+        ]);
+
+        return (response as any).content || '';
+    } catch (error) {
+        console.error('Summarization failed:', error);
+        // Return a simple fallback summary
+        return `Previous conversation had ${messages.length} messages about various topics.`;
+    }
 };

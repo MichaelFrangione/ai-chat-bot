@@ -155,8 +155,8 @@ export const themes: Record<string, Theme> = {
         fontFamily: 'Inter, sans-serif',
         fontSize: '16px',
     },
-    murderbot: {
-        id: 'SecUnit',
+    secUnit: {
+        id: 'secUnit',
         name: 'SecUnit',
         description: 'Industrial steel with safety orange accents',
         colors: {
@@ -175,7 +175,7 @@ export const themes: Record<string, Theme> = {
             // Use orange for prominent components (send button, user bubble)
             componentColor: '#ff6a00',
             scrollbar: {
-                thumb: '#a6aaaf',
+                thumb: '#ff6a00',
                 track: 'transparent',
             },
         },
