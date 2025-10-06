@@ -7,9 +7,10 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 interface MessageBubbleProps {
     message: ChatMessage;
+    assistantLabel?: string;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+export default function MessageBubble({ message, assistantLabel }: MessageBubbleProps) {
     const { currentTheme } = useTheme();
     const isUser = message.role === 'user';
     const isTool = message.role === 'tool';
@@ -34,7 +35,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                         <div className="flex items-center gap-2 mb-2">
                             <div
                                 className="w-2 h-2 rounded-full"
-                                style={{ backgroundColor: currentTheme.colors.accent === 'blue' ? '#facc15' : '#ef4444' }}
+                                style={{ backgroundColor: currentTheme.colors.accent === 'blue' ? '#facc15' : '#10b981' }}
                             ></div>
                             <span
                                 className="font-semibold"
@@ -76,11 +77,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                             <div
                                 className="w-2 h-2 rounded-full"
                                 style={{
-                                    backgroundColor: isUser ? 'rgba(255,255,255,0.7)' : currentTheme.colors.accent === 'blue' ? '#10b981' : '#ef4444'
+                                    backgroundColor: isUser ? 'rgba(255,255,255,0.7)' : currentTheme.colors.accent === 'blue' ? '#10b981' : '#10b981'
                                 }}
                             ></div>
                             <div className="text-xs font-medium opacity-80">
-                                {isUser ? 'You' : 'AI Assistant'}
+                                {isUser ? 'You' : (assistantLabel || 'AI Assistant')}
                             </div>
                         </div>
                         <div className="whitespace-pre-wrap text-sm leading-relaxed break-words">{message.content}</div>

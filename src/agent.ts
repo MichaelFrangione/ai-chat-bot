@@ -5,6 +5,7 @@ import { runTool } from './toolRunner';
 import { generateImageToolDefinition } from './tools/generateImage';
 import { parseToolResponse, parseAssistantResponse } from './lib/structured-parser';
 import type { AIMessage } from '../types';
+import { getPersonalityDirectives, PersonalityKey } from './constants/personalities';
 
 const handleImageApprovalFlow = async (
     history: AIMessage[],
@@ -47,11 +48,13 @@ export const runAgent = async ({
     tools,
     isApproval = false,
     sessionId,
+    personality,
 }: {
     userMessage: string;
     tools: any[];
     isApproval?: boolean;
     sessionId?: string;
+    personality?: PersonalityKey;
 }) => {
     const history = await getMessages(sessionId);
 
@@ -112,7 +115,8 @@ export const runAgent = async ({
 
     while (true) {
         const history = await getMessages(sessionId);
-        const response = await runLLM({ messages: history, tools });
+        const systemDirectives = getPersonalityDirectives(personality);
+        const response = await runLLM({ messages: history, tools, systemPrompt: systemDirectives });
 
         if (response.content) {
             loader.stop();

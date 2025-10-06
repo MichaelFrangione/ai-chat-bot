@@ -9,9 +9,10 @@ interface MessageListProps {
     messages: ChatMessage[];
     isLoading: boolean;
     messagesEndRef: React.RefObject<HTMLDivElement>;
+    assistantLabel?: string;
 }
 
-export default function MessageList({ messages, isLoading, messagesEndRef }: MessageListProps) {
+export default function MessageList({ messages, isLoading, messagesEndRef, assistantLabel }: MessageListProps) {
     const { currentTheme } = useTheme();
 
     return (
@@ -50,7 +51,7 @@ export default function MessageList({ messages, isLoading, messagesEndRef }: Mes
 
             {messages.map((message, index) => (
                 <div key={message.id || index} className="animate-fadeIn">
-                    <MessageBubble message={message} />
+                    <MessageBubble message={message} assistantLabel={assistantLabel} />
                 </div>
             ))}
 

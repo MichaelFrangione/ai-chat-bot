@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
     try {
-        const { message } = await request.json();
+        const { message, personality } = await request.json();
 
         if (!message) {
             return NextResponse.json(
@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
             userMessage: message,
             tools,
             sessionId,
+            personality,
         });
 
         const r: any = result as any;
