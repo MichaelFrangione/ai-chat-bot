@@ -8,7 +8,8 @@ import type { AIMessage } from '../types';
 
 const handleImageApprovalFlow = async (
     history: AIMessage[],
-    userMessage: string
+    userMessage: string,
+    sessionId?: string
 ) => {
     const lastMessage = history.at(-1);
     const toolCall = (lastMessage as any)?.tool_calls?.[0];
@@ -28,11 +29,12 @@ const handleImageApprovalFlow = async (
         const toolResponse = await runTool(toolCall, userMessage);
 
         loader.update(`done: ${toolCall.function.name}`);
-        await saveToolResponse(toolCall.id, toolResponse);
+        await saveToolResponse(toolCall.id, toolResponse, sessionId);
     } else {
         await saveToolResponse(
             toolCall.id,
-            'User did not approve image generation at this time.'
+            'User did not approve image generation at this time.',
+            sessionId
         );
     }
 
@@ -44,12 +46,14 @@ export const runAgent = async ({
     userMessage,
     tools,
     isApproval = false,
+    sessionId,
 }: {
     userMessage: string;
     tools: any[];
     isApproval?: boolean;
+    sessionId?: string;
 }) => {
-    const history = await getMessages();
+    const history = await getMessages(sessionId);
 
     // Handle approval flow if this is an approval response
     if (isApproval) {
@@ -62,13 +66,13 @@ export const runAgent = async ({
 
             if (approved) {
                 const toolResponse = await runTool(toolCall, userMessage);
-                await saveToolResponse(toolCall.id, toolResponse);
+                await saveToolResponse(toolCall.id, toolResponse, sessionId);
 
                 // Parse structured output from tool response
                 structuredOutput = parseToolResponse(toolCall.function.name, toolResponse);
                 if (structuredOutput) {
                     // Add structured output to the last message
-                    const lastMessage = (await getMessages()).at(-1);
+                    const lastMessage = (await getMessages(sessionId)).at(-1);
                     if (lastMessage) {
                         (lastMessage as any).structuredOutput = structuredOutput;
                     }
@@ -76,12 +80,13 @@ export const runAgent = async ({
             } else {
                 await saveToolResponse(
                     toolCall.id,
-                    'User did not approve image generation at this time.'
+                    'User did not approve image generation at this time.',
+                    sessionId
                 );
             }
 
             // Continue with the conversation
-            const newHistory = await getMessages();
+            const newHistory = await getMessages(sessionId);
             const response = await runLLM({ messages: newHistory, tools });
 
             // Attach structured output to the final response if available
@@ -91,14 +96,14 @@ export const runAgent = async ({
                 response.content = "";
             }
 
-            await addMessages([response]);
-            return getMessages();
+            await addMessages([response], sessionId);
+            return getMessages(sessionId);
         }
     }
 
     // Regular message flow
     if (!isApproval) {
-        await addMessages([{ role: 'user', content: userMessage }]);
+        await addMessages([{ role: 'user', content: userMessage }], sessionId);
     }
 
     const loader = showLoader('🤔');
@@ -106,7 +111,7 @@ export const runAgent = async ({
     let pendingStructuredOutput: any = null;
 
     while (true) {
-        const history = await getMessages();
+        const history = await getMessages(sessionId);
         const response = await runLLM({ messages: history, tools });
 
         if (response.content) {
@@ -134,13 +139,13 @@ export const runAgent = async ({
                 }
             }
 
-            await addMessages([response]);
-            return getMessages();
+            await addMessages([response], sessionId);
+            return getMessages(sessionId);
         }
 
         // Only add tool call messages if they're not the final response
         if (response.tool_calls) {
-            await addMessages([response]);
+            await addMessages([response], sessionId);
         }
 
         if (response.tool_calls) {
@@ -151,7 +156,7 @@ export const runAgent = async ({
                 logMessage(response);
                 // Return with approval needed flag
                 return {
-                    messages: await getMessages(),
+                    messages: await getMessages(sessionId),
                     needsApproval: true,
                     approvalType: 'image',
                     toolCall: toolCall
@@ -162,7 +167,7 @@ export const runAgent = async ({
 
             loader.update(`executing: ${(toolCall as any).function.name}`);
             const toolResponse = await runTool(toolCall, userMessage);
-            await saveToolResponse((toolCall as any).id, toolResponse);
+            await saveToolResponse((toolCall as any).id, toolResponse, sessionId);
             loader.update(`done: ${(toolCall as any).function.name}`);
 
             // Parse structured output from tool response and store for later

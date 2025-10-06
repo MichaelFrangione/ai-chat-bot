@@ -15,12 +15,14 @@ export async function POST(request: NextRequest) {
 
         // Convert approval to user message format
         const userMessage = approval ? 'yes' : 'no';
+        const sessionId = request.cookies.get('sid')?.value;
 
         // Run the agent with the approval response
         const result = await runAgent({
             userMessage,
             tools,
-            isApproval: true
+            isApproval: true,
+            sessionId,
         });
 
         return NextResponse.json({

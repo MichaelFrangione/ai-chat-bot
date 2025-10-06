@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getMessages } from '@/memory';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
-        const messages = await getMessages();
+        const sessionId = request.cookies.get('sid')?.value;
+        const messages = await getMessages(sessionId);
 
         return NextResponse.json({
             success: true,
