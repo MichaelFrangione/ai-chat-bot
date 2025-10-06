@@ -1,6 +1,8 @@
 import type { ToolFn } from "../../types";
 import fetch from "node-fetch";
 import { z } from "zod";
+import { styleWithPersona } from "../lib/persona-styler";
+import { PersonalityKey } from "../constants/personalities";
 
 export const redditToolDefinition = {
     name: "reddit",
@@ -13,7 +15,7 @@ export const redditToolDefinition = {
 
 type Args = z.infer<typeof redditToolDefinition.parameters>;
 
-export const reddit: ToolFn<Args, string> = async ({ toolArgs }: { toolArgs: Args; userMessage: string; }) => {
+export const reddit: ToolFn<Args, string> = async ({ toolArgs, personality }: { toolArgs: Args; userMessage: string; personality?: PersonalityKey; }) => {
     const { limit, subreddit } = toolArgs;
 
     // Handle nullable values
@@ -47,6 +49,12 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs }: { toolArgs: Arg
         ? `Current trending posts from r/${actualSubreddit}`
         : "Current trending posts from across Reddit";
 
+    let contextualMessage = `Found ${posts.length} ${actualSubreddit ? `posts from r/${actualSubreddit}` : 'trending Reddit posts'}`;
+
+    if (personality && personality !== 'assistant') {
+        contextualMessage = await styleWithPersona(contextualMessage, personality, 'reddit posts');
+    }
+
     const structuredOutput = {
         type: 'reddit_posts' as const,
         data: {
@@ -58,7 +66,7 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs }: { toolArgs: Arg
             title,
             description
         },
-        contextualMessage: `Found ${posts.length} ${actualSubreddit ? `posts from r/${actualSubreddit}` : 'trending Reddit posts'}`
+        contextualMessage
     };
 
     return JSON.stringify(structuredOutput);

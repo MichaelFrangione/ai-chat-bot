@@ -4,6 +4,7 @@ export const SUGGESTIONS: string[] = [
     'Tell me a joke',
     'Generate an image',
     'Show trending Reddit posts',
+    'Show me a cute post from reddit',
     'Find movies by director',
     'List top-rated comedies',
     'Create a cyberpunk city image',

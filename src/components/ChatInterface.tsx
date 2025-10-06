@@ -209,6 +209,7 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
                 isLoading={isLoading}
                 messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
                 assistantLabel={PERSONALITIES[personality]?.label || 'AI Assistant'}
+                assistantLoadingText={PERSONALITIES[personality]?.loadingText || 'Thinking...'}
                 onQuickPrompt={(text) => handleSendMessage(text)}
                 showSecondarySuggestions={!isLoading && draft.trim().length === 0}
             />

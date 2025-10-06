@@ -3,15 +3,18 @@ import { dadJoke, dadJokeToolDefinition } from "./tools/dadJoke";
 import { generateImage, generateImageToolDefinition } from "./tools/generateImage";
 import { reddit, redditToolDefinition } from "./tools/reddit";
 import { movieSearch, movieSearchToolDefinition } from "./tools/movieSearch";
+import { PersonalityKey } from "./constants/personalities";
 
 export const runTool = async (
     toolCall: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
-    userMessage: string
+    userMessage: string,
+    personality?: PersonalityKey
 ) => {
 
     const input = {
         userMessage,
         toolArgs: JSON.parse(toolCall.function.arguments),
+        personality,
     };
 
     switch (toolCall.function.name) {

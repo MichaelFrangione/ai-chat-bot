@@ -29726,6 +29726,2438 @@
           ],
           "score": 0.8765432098765435,
           "createdAt": "2025-10-04T16:27:21.496Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "suggest me a good action movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_qMuwD6NgQAdVwt5UNojmlQVZ",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"best action movie\",\"genre\":\"\" , \"director\":\"\" , \"year\":0 , \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.813Z"
+            },
+            {
+              "input": "i want to find a movie about aliens coming to earth can you give me some recommendations?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_DTH94ssb4wUZwp50jBUsJTOM",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"alien invasion on Earth\",\"genre\":\"\" ,\"director\":\"\" ,\"year\":0 ,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0.5
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "find me some movies based in italy and heist themed movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_FgagZtxpsCzdzYFztBpFiCOJ",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"Italy-set heist films\",\"genre\":\"\" ,\"director\":\"\" ,\"year\":0 ,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0.5
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "give me the ultimate sci-fi movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_Z2iRqWsR3TYnE8PY66IrcWH3",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"ultimate sci-fi movie\",\"genre\":\"Sci-Fi\",\"director\":\"\" , \"year\":0, \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "what is the best action movie ever made?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_BFlKW0zJCcDPnjEJQ05ex3Ea",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"best action movie ever made\",\"genre\":\"\" , \"director\":\"\" , \"year\":0 , \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "recommend me one comedy movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_yKMzoyk1rLpLmybefturf373",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"comedy movie\",\"genre\":\"\" , \"director\":\"\" , \"year\":0 , \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "what is the top horror movie?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_opKZKOKLwpyWDm0fUT2JKlQN",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"top horror movie\",\"genre\":\"Horror\",\"director\":\"\" ,\"year\":2000,\"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "show me some comedy movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_ihdonKEyfqaBqcxkiC5aGF4G",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"comedy movies\",\"genre\":\"Comedy\",\"director\":\"\" , \"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "recommend me some thriller movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_NWgeWpLoy7dHe86gbY16PXwb",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"thriller movies recommendations\",\"genre\":\"Thriller\",\"director\":\"\" ,\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "give me movie recommendations for a date night",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_r34n7rZP9D6aWuwOl7nA1I9R",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"date night movies for couples: light-hearted romance, feel-good, cozy vibe, light comedy, sweet drama, not too heavy\",\"genre\":\"\" , \"director\":\"\" , \"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0.5
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "movie recommendations please",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_zSsnIFkNdwBMWuq7kXO0hDhL",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"movie recommendations\", \"genre\": \"\", \"director\": \"\", \"year\": 0, \"limit\": 1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "help me find a movie to watch",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_UkjzJlNNfEmNgTeqYzYm4vlg",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"help me find a movie to watch\",\"genre\":\"\" , \"director\":\"\" , \"year\":0 , \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "I want to watch a horror movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_z1QwYBeZoi74FlESd1ICbY99",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"horror movie\",\"genre\":\"Horror\",\"director\":\"\" , \"year\":0,\"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "show me drama movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_0YxeHQU7JZuCDLo4KJ3bPWqS",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"drama movies\",\"genre\":\"Drama\",\"director\":\"\" ,\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "find me romantic comedy movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_iqnh31SuSj3PkZQ01BrRU3Fg",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"romantic comedy movies\",\"genre\":\"Romantic Comedy\",\"director\":\"\" ,\"year\":0,\"limit\":2}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "show me movies by Christopher Nolan",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_jTXX6McLZ6EXc63JDHfqISc0",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"movies by Christopher Nolan\", \"genre\":\"\" , \"director\":\"Christopher Nolan\", \"year\":-1, \"limit\":-1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "what movies has Steven Spielberg directed?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_DUddqmZV7xezaLatUEb42YsC",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"movies directed by Steven Spielberg\",\"genre\":\"\" , \"director\":\"Steven Spielberg\",\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "find me Quentin Tarantino films",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_CFqD1VBBUWFuTAeGvnChHttj",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"films directed by Quentin Tarantino\",\"genre\":\"\" , \"director\":\"Quentin Tarantino\",\"year\":0,\"limit\":15}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "movies about space exploration",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_l53RrK0CkJlzcj8HYNW2I0Fi",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"space exploration, astronaut missions, space travel, planets, space stations, starship voyages\", \"genre\": \"null\", \"director\": \"null\", \"year\": -1, \"limit\":  -1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "family-friendly movies about pets",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_c3Anz2iBMzo4TRp8SjbTn35s",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"family-friendly pet movies\",\"genre\":\"\" ,\"director\":\"\" ,\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "movies set in the 1920s",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_FfxCx9TKB6IJsZqwgqbelzrH",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"films set in the 1920s\",\"genre\":\"\" , \"director\":\"\" , \"year\":0 , \"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "time travel movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_JpVoud3B1ICEUrP654SDPQ1X",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"time travel movies\",\"genre\":\"\" , \"director\":\"\" , \"year\":0 , \"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "movies about artificial intelligence",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_9xu9pgEM45gnidtJEJ1kBcNu",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"artificial intelligence\",\"genre\":\"\" , \"director\":\"\" , \"year\":0, \"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "show me the best Christopher Nolan sci-fi movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_RuAAEiqfpN3Zbd2DFQrdNZiI",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"best Christopher Nolan sci-fi movie\",\"genre\":\"Sci-Fi\",\"director\":\"Christopher Nolan\",\"year\":1200,\"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "give me 3 comedy movies from the 90s",
+              "output": {
+                "role": "assistant",
+                "content": "",
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 0
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 0
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "movie recommendations please",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_uKatNbyxmqXLHK5bEN7Am7GM",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"general movie recommendations\",\"genre\":\"\" , \"director\": \"\", \"year\":0, \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            },
+            {
+              "input": "help me find a movie to watch",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_Ap46B4kG8kKvoTjqh25geHYq",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"help me find a movie to watch\",\"genre\":\"\" ,\"director\":\"\" ,\"year\":0 ,\"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:14.814Z"
+            }
+          ],
+          "score": 0.820987654320988,
+          "createdAt": "2025-10-06T17:07:14.814Z"
+        },
+        {
+          "runs": [
+            {
+              "input": "suggest me a good action movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_iFRACZIuI1I8OpYeFoNHHQ3R",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"best action movie\",\"genre\":\"Action\",\"director\":\"\" ,\"year\":0,\"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0.5
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.850Z"
+            },
+            {
+              "input": "i want to find a movie about aliens coming to earth can you give me some recommendations?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_wc5LaOjAMAIeMRU8FPXChJ0B",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"aliens coming to earth\",\"genre\":\".\",\"director\":\".\",\"year\":0,\"limit\":-1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "find me some movies based in italy and heist themed movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_A2dYAcIJLvijfMqJyY81UY4J",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"movies set in Italy that feature a heist\",\"genre\":\"\" , \"director\":\"\" , \"year\":0, \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "give me the ultimate sci-fi movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_2g5kVtctAgtycMNDjHmvj7Ms",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"ultimate sci-fi movie\",\"genre\":\"Sci-Fi\",\"director\":\"\" , \"year\":-1, \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "what is the best action movie ever made?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_nTdz9fnuXgRnp5EwIFmyzt4D",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"best action movie ever\",\"genre\":\"Action\",\"director\":\"\" ,\"year\":0,\"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "recommend me one comedy movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_Uvx0W9eBhE6v1dMebQb32lEF",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"comedy movie recommendation\",\"genre\":\"\" , \"director\":\"\" , \"year\":0, \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "what is the top horror movie?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_qStNgyhAzF28zbsJJnfByx73",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"top horror movie of all time\",\"genre\":\"Horror\",\"director\":\"\" ,\"year\":8,\"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "show me some comedy movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_xZpuFdKHArAtme0LGcoYZsdM",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"comedy movies\",\"genre\":\"Comedy\",\"director\":\"\" ,\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "recommend me some thriller movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_qmFmd8TeFGpL5FgZM60Uipc1",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"thriller movies with suspenseful plots and twists\",\"genre\":\"Thriller\",\"director\":\"\" ,\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "give me movie recommendations for a date night",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_DFK62hzrrDuTWIp26wC3YHZD",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"date night romantic comedy feel-good romance for couples\", \"genre\": \"Romance\", \"director\": \"\", \"year\": 0, \"limit\": 5}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0.5
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "movie recommendations please",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_x3LS3LiwZZx4GNYMwckdthcY",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"general movie recommendations\", \"genre\":\",\", \"director\":\",\", \"year\":0, \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0.5
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "help me find a movie to watch",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_J9HQh78FfGqYQyqetwF6qDAg",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"help me find a movie to watch\",\"genre\":\"\" , \"director\":\"\" , \"year\":0, \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "I want to watch a horror movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_N5JqtkzwzfqacpKMDznczNZv",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"best horror movie recommendations\",\"genre\":\"Horror\",\"director\":\"\" , \"year\":0, \"limit\":3}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "show me drama movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_ggKPZoWcO2Fb2uLqmiLM8JuL",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"drama movies\",\"genre\":\"Drama\",\"director\":\"\" ,\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "find me romantic comedy movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_WrCz2fDSTm4T35y89hq3uwYe",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"romantic comedy movies\",\"genre\":\"Romantic Comedy\",\"director\":\"\" ,\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "show me movies by Christopher Nolan",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_BQ1VGlwiGouVqDrTsTZiBl07",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"films by Christopher Nolan\",\"genre\":\"\" , \"director\":\"Christopher Nolan\",\"year\":0, \"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "what movies has Steven Spielberg directed?",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_QxItwg19H7ud9aiK9iRQ2zVF",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"movies directed by Steven Spielberg\",\"genre\":\"\" , \"director\":\"Steven Spielberg\",\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "find me Quentin Tarantino films",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_YubV11vjQAowZo5bdrfAaM5h",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"Quentin Tarantino films\",\"genre\":\"\" , \"director\":\"Quentin Tarantino\",\"year\":0,\"limit\":4}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "movies about space exploration",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_xL6gdMBJ0DdlXetAMpSaIKIP",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"movies about space exploration\",\"genre\":\"\" ,\"director\":\"\" ,\"year\":0,\"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "family-friendly movies about pets",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_NmPqus6QbBs4HyEBkDvvQ8dL",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"family-friendly pets movies\", \"genre\":\"\" , \"director\": \"\", \"year\": 0, \"limit\": 0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "movies set in the 1920s",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_Vjtx3FHmBCFdyDH5MzK1k0ch",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"films set in the 1920s\", \"genre\":\"\" , \"director\":\"\" , \"year\":0 , \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "time travel movies",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_1VPjUojawTrCXvLYEb303XfS",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"time travel\",\"genre\":\"\" ,\"director\":\"\" ,\"year\":0,\"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "movies about artificial intelligence",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_rDHYbhFD5O8yaZ6TClpL0Cpn",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"movies about artificial intelligence, AI, sentient machines, ethics of AI\",\"genre\":\"\" , \"director\":\"\" , \"year\":0, \"limit\":0}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "show me the best Christopher Nolan sci-fi movie",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_HvP0rPi1IrTdKoVpqTiVhBr8",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"Christopher Nolan sci-fi\",\"genre\":\"Sci-Fi\",\"director\":\"Christopher Nolan\",\"year\":1990,\"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "give me 3 comedy movies from the 90s",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_PBPfBKqJSz4qbndqvYfjZbbn",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"comedy movies from the 1990s\",\"genre\":\"Comedy\",\"director\":\"\" ,\"year\":0,\"limit\":3}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 1
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "movie recommendations please",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_s3HAjce9gpahJeFfJUJcLhIf",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"general movie recommendations\",\"genre\":\"\" , \"director\":\"\" , \"year\":0, \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            },
+            {
+              "input": "help me find a movie to watch",
+              "output": {
+                "role": "assistant",
+                "content": null,
+                "tool_calls": [
+                  {
+                    "id": "call_9Gj6IX9wM6KlwlY6A5Gv0HAT",
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search",
+                      "arguments": "{\"query\":\"general movie recommendation\",\"genre\":\"\" , \"director\":\"\" , \"year\":0, \"limit\":1}"
+                    }
+                  }
+                ],
+                "refusal": null,
+                "annotations": []
+              },
+              "expected": {
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "type": "function",
+                    "function": {
+                      "name": "movie_search"
+                    }
+                  }
+                ]
+              },
+              "scores": [
+                {
+                  "name": "ToolCallMatch",
+                  "score": 1
+                },
+                {
+                  "name": "ToolCallWithParams",
+                  "score": 1
+                },
+                {
+                  "name": "MovieSearchParamsMatch",
+                  "score": 0
+                }
+              ],
+              "createdAt": "2025-10-06T17:07:33.851Z"
+            }
+          ],
+          "score": 0.8456790123456793,
+          "createdAt": "2025-10-06T17:07:33.851Z"
         }
       ]
     }

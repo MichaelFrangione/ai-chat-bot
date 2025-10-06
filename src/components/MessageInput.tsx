@@ -53,7 +53,7 @@ export default function MessageInput({ onSendMessage, disabled, onInputChange }:
                         style={{
                             borderColor: currentTheme.colors.border,
                             backgroundColor: currentTheme.colors.surface,
-                            color: currentTheme.colors.text
+                            color: currentTheme.colors.text,
                         }}
                     />
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2">

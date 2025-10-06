@@ -11,11 +11,12 @@ interface MessageListProps {
     isLoading: boolean;
     messagesEndRef: React.RefObject<HTMLDivElement>;
     assistantLabel?: string;
+    assistantLoadingText?: string;
     onQuickPrompt?: (text: string) => void;
     showSecondarySuggestions?: boolean;
 }
 
-export default function MessageList({ messages, isLoading, messagesEndRef, assistantLabel, onQuickPrompt, showSecondarySuggestions }: MessageListProps) {
+export default function MessageList({ messages, isLoading, messagesEndRef, assistantLabel, assistantLoadingText, onQuickPrompt, showSecondarySuggestions }: MessageListProps) {
     const { currentTheme } = useTheme();
 
     return (
@@ -70,7 +71,7 @@ export default function MessageList({ messages, isLoading, messagesEndRef, assis
                             borderColor: currentTheme.colors.border
                         }}
                     >
-                        <LoadingSpinner />
+                        <LoadingSpinner label={assistantLoadingText} />
                     </div>
                 </div>
             )}

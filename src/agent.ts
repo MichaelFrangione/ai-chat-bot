@@ -27,7 +27,7 @@ const handleImageApprovalFlow = async (
 
     if (approved) {
         loader.update(`executing tool: ${toolCall.function.name}`);
-        const toolResponse = await runTool(toolCall, userMessage);
+        const toolResponse = await runTool(toolCall, userMessage, personality);
 
         loader.update(`done: ${toolCall.function.name}`);
         await saveToolResponse(toolCall.id, toolResponse, sessionId);
@@ -68,7 +68,7 @@ export const runAgent = async ({
             let structuredOutput: any = null;
 
             if (approved) {
-                const toolResponse = await runTool(toolCall, userMessage);
+                const toolResponse = await runTool(toolCall, userMessage, personality);
                 await saveToolResponse(toolCall.id, toolResponse, sessionId);
 
                 // Parse structured output from tool response
@@ -170,7 +170,7 @@ export const runAgent = async ({
             logMessage(response);
 
             loader.update(`executing: ${(toolCall as any).function.name}`);
-            const toolResponse = await runTool(toolCall, userMessage);
+            const toolResponse = await runTool(toolCall, userMessage, personality);
             await saveToolResponse((toolCall as any).id, toolResponse, sessionId);
             loader.update(`done: ${(toolCall as any).function.name}`);
 

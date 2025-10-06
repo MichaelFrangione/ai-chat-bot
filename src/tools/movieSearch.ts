@@ -3,6 +3,8 @@ import { z } from "zod";
 import { openai } from "../ai";
 import { queryMovies } from "../rag/query";
 import type { MovieMetadata } from "../rag/types";
+import { styleWithPersona } from "../lib/persona-styler";
+import { PersonalityKey } from "../constants/personalities";
 
 export const movieSearchToolDefinition = {
     name: "movie_search",
@@ -28,7 +30,7 @@ FILTERING GUIDELINES:
 
 type Args = z.infer<typeof movieSearchToolDefinition.parameters>;
 
-export const movieSearch: ToolFn<Args, string> = async ({ toolArgs, userMessage }: { toolArgs: Args; userMessage: string; }) => {
+export const movieSearch: ToolFn<Args, string> = async ({ toolArgs, userMessage, personality }: { toolArgs: Args; userMessage: string; personality?: PersonalityKey; }) => {
 
     const { query, genre, director, year, limit } = toolArgs;
 
@@ -45,6 +47,7 @@ export const movieSearch: ToolFn<Args, string> = async ({ toolArgs, userMessage 
     console.log('filters', filters);
     console.log('limit', actualLimit, 'isSingle', isSingleRecommendation);
     console.log('toolArgs.limit:', limit);
+    console.log('personality (movieSearch):', personality);
 
     let results;
 
@@ -107,7 +110,7 @@ export const movieSearch: ToolFn<Args, string> = async ({ toolArgs, userMessage 
                 ? `Found the perfect movie for "${query}"`
                 : `Found ${formattedResults.length} movie recommendations for "${query}"`
         },
-        contextualMessage: await generateContextualMessage(formattedResults, query, genre, director, isSingleRecommendation),
+        contextualMessage: await generateContextualMessage(formattedResults, query, genre, director, isSingleRecommendation, personality),
         aiChosenMovie: isSingleRecommendation ? formattedResults[0] : await getAiChosenMovie(formattedResults, query, genre, director)
     };
 
@@ -166,7 +169,7 @@ Example response: "The Matrix"`;
     }
 }
 
-async function generateContextualMessage(movies: any[], query: string, genre?: string | null, director?: string | null, isSingleRecommendation: boolean = false): Promise<string> {
+async function generateContextualMessage(movies: any[], query: string, genre?: string | null, director?: string | null, isSingleRecommendation: boolean = false, personality?: PersonalityKey): Promise<string> {
     if (movies.length === 0) {
         return `I couldn't find any movies matching your criteria. Try adjusting your search terms or filters.`;
     }
@@ -222,6 +225,12 @@ Make it sound like you actually analyzed all the options and picked the best one
         });
 
         const contextualMessage = contextualResponse.choices[0]?.message?.content?.trim();
+
+        // Style the message with personality if one is selected
+        if (personality && personality !== 'assistant' && contextualMessage) {
+            return await styleWithPersona(contextualMessage, personality, 'movie recommendation');
+        }
+
         return contextualMessage || "";
     } catch (error) {
         console.error('Error generating contextual message:', error);
