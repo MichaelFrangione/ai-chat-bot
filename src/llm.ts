@@ -10,15 +10,17 @@ export const runLLM = async ({
     tools = [],
     temperature = 1,
     systemPrompt,
+    sessionId,
 }: {
     messages: AIMessage[];
     tools?: any[];
     temperature?: number;
     systemPrompt?: string;
+    sessionId?: string;
 }) => {
 
     const formattedTools = tools.map(zodFunction);
-    const summary = await getSummary();
+    const summary = await getSummary(sessionId);
 
     const response = await openai.chat.completions.create({
         model: 'gpt-5-nano',
@@ -65,7 +67,7 @@ export const runApprovalCheck = async (userMessage: string) => {
     return result.choices[0].message.parsed?.approved;
 };
 
-export const summarizeMessages = async (messages: AIMessage[]) => {
+export const summarizeMessages = async (messages: AIMessage[], sessionId?: string) => {
 
     const response = await runLLM({
         systemPrompt: `Create a comprehensive conversation summary that preserves ALL important personal information. You MUST include:\n' +
@@ -76,7 +78,8 @@ export const summarizeMessages = async (messages: AIMessage[]) => {
                     '- Important decisions or outcomes\n' +
                     '- Technical context or tools used\n\n' +
                     'If there is a previous summary, merge it with new information. NEVER lose personal details like names, birthdays, or plans. Be thorough in preserving context.`,
-        messages
+        messages,
+        sessionId,
     });
 
     return response.content || '';

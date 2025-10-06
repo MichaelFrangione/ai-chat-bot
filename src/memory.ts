@@ -131,7 +131,7 @@ export const addMessages = async (messages: AIMessage[], sessionId?: string) => 
             ...oldestMessages
         ];
 
-        const newSummary = await summarizeMessages(messagesToSummarize);
+        const newSummary = await summarizeMessages(messagesToSummarize, sessionId);
 
         // Update the summary and remove the old messages
         db.data.summary = newSummary;
@@ -144,17 +144,40 @@ export const addMessages = async (messages: AIMessage[], sessionId?: string) => 
 export const getMessages = async (sessionId?: string) => {
     const db = await getDb(sessionId);
     const messages = db.data.messages.map(removeMetadata);
-    const lastTen = messages.slice(-10);
+    let slice = messages.slice(-10);
 
-    // If first message is a tool response, get one more message before it
-    if (lastTen[0]?.role === 'tool') {
-        const eleventhMessage = messages[messages.length - 11];
-        if (eleventhMessage) {
-            return [...[eleventhMessage], ...lastTen];
+    // Ensure tool responses in the slice have their corresponding assistant tool_call in the slice
+    const hasAssistantToolCallFor = (toolCallId: string) =>
+        slice.some((m: any) => m.role === 'assistant' && m.tool_calls && m.tool_calls.some((tc: any) => tc.id === toolCallId));
+
+    // If a tool message lacks its initiating assistant call in the slice, try to prepend earlier messages to include it
+    for (let i = 0; i < slice.length; i++) {
+        const m: any = slice[i];
+        if (m.role === 'tool' && m.tool_call_id && !hasAssistantToolCallFor(m.tool_call_id)) {
+            // Find the assistant tool_call earlier in full history
+            const assistantIdx = messages.findIndex((am: any) => am.role === 'assistant' && am.tool_calls && am.tool_calls.some((tc: any) => tc.id === m.tool_call_id));
+            if (assistantIdx >= 0) {
+                // Prepend from assistantIdx up to current slice start
+                const startIdx = Math.max(0, assistantIdx);
+                const needed = messages.slice(startIdx, messages.length - slice.length);
+                slice = [...needed, ...slice].slice(-10);
+            } else {
+                // If we can't find the assistant call, drop the orphan tool message
+                slice = slice.filter((_, idx) => idx !== i);
+                i -= 1;
+            }
         }
     }
 
-    return lastTen;
+    // If the first message is still a tool, prepend one earlier message if available
+    if ((slice[0] as any)?.role === 'tool') {
+        const prepend = messages[messages.length - slice.length - 1];
+        if (prepend) {
+            slice = [prepend, ...slice].slice(-10);
+        }
+    }
+
+    return slice;
 };
 
 export const getSummary = async (sessionId?: string) => {
