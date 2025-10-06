@@ -6,9 +6,10 @@ import { useTheme } from '@/contexts/ThemeContext';
 interface MessageInputProps {
     onSendMessage: (message: string) => void;
     disabled?: boolean;
+    onInputChange?: (text: string) => void;
 }
 
-export default function MessageInput({ onSendMessage, disabled }: MessageInputProps) {
+export default function MessageInput({ onSendMessage, disabled, onInputChange }: MessageInputProps) {
     const { currentTheme } = useTheme();
     const [message, setMessage] = useState('');
 
@@ -17,6 +18,7 @@ export default function MessageInput({ onSendMessage, disabled }: MessageInputPr
         if (message.trim() && !disabled) {
             onSendMessage(message);
             setMessage('');
+            onInputChange && onInputChange('');
         }
     };
 
@@ -40,7 +42,10 @@ export default function MessageInput({ onSendMessage, disabled }: MessageInputPr
                     <input
                         type="text"
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        onChange={(e) => {
+                            setMessage(e.target.value);
+                            onInputChange && onInputChange(e.target.value);
+                        }}
                         onKeyPress={handleKeyPress}
                         placeholder="Type your message..."
                         disabled={disabled}

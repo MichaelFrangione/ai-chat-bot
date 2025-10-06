@@ -4,15 +4,18 @@ import { ChatMessage } from '@/types/chat';
 import MessageBubble from './MessageBubble';
 import LoadingSpinner from './LoadingSpinner';
 import { useTheme } from '@/contexts/ThemeContext';
+import SuggestionChips from './SuggestionChips';
 
 interface MessageListProps {
     messages: ChatMessage[];
     isLoading: boolean;
     messagesEndRef: React.RefObject<HTMLDivElement>;
     assistantLabel?: string;
+    onQuickPrompt?: (text: string) => void;
+    showSecondarySuggestions?: boolean;
 }
 
-export default function MessageList({ messages, isLoading, messagesEndRef, assistantLabel }: MessageListProps) {
+export default function MessageList({ messages, isLoading, messagesEndRef, assistantLabel, onQuickPrompt, showSecondarySuggestions }: MessageListProps) {
     const { currentTheme } = useTheme();
 
     return (
@@ -46,6 +49,9 @@ export default function MessageList({ messages, isLoading, messagesEndRef, assis
                     <div className="mt-4 text-xs opacity-60">
                         <p>Try asking about movies, jokes, or request an image.</p>
                     </div>
+
+                    {/* Suggestion chips */}
+                    <SuggestionChips onQuickPrompt={onQuickPrompt} />
                 </div>
             )}
 
@@ -69,7 +75,15 @@ export default function MessageList({ messages, isLoading, messagesEndRef, assis
                 </div>
             )}
 
-            <div ref={messagesEndRef} />
+            {/* Secondary suggestion chips: show for non-empty chats when input is empty and not loading */}
+            {messages.length > 0 && !isLoading && showSecondarySuggestions && (
+                <div className="mt-6 -mb-6">
+                    <SuggestionChips onQuickPrompt={onQuickPrompt} />
+                </div>
+            )}
+
+            {/* Scroll anchor: we scroll to this element to keep the view pinned to the latest message */}
+            <div ref={messagesEndRef} className="h-0 m-0 p-0" aria-hidden="true" />
         </div>
     );
 }

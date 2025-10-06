@@ -155,6 +155,33 @@ export const themes: Record<string, Theme> = {
         fontFamily: 'Inter, sans-serif',
         fontSize: '16px',
     },
+    murderbot: {
+        id: 'SecUnit',
+        name: 'SecUnit',
+        description: 'Industrial steel with safety orange accents',
+        colors: {
+            primary: '#ff6a00',
+            secondary: '#1f9d8f',
+            accent: '#14b8a6',
+            background: '#d9dbd7',
+            surface: '#e7e9e6',
+            text: '#111417',
+            border: '#b9bdb9',
+            headerText: '#111417',
+            gradient: {
+                from: '#eceeec',
+                to: '#d3d7d6',
+            },
+            // Use orange for prominent components (send button, user bubble)
+            componentColor: '#ff6a00',
+            scrollbar: {
+                thumb: '#a6aaaf',
+                track: 'transparent',
+            },
+        },
+        fontFamily: 'var(--font-michroma), Inter, sans-serif',
+        fontSize: '16px',
+    },
 };
 
 export const defaultTheme = themes.default;

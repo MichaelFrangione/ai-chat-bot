@@ -24,6 +24,7 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
     const { currentTheme } = useTheme();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [draft, setDraft] = useState('');
     const [approvalRequest, setApprovalRequest] = useState<{
         toolName: string;
         toolArgs: any;
@@ -44,6 +45,13 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
     useEffect(() => {
         // Load initial messages
         loadMessages();
+        // Load saved personality
+        try {
+            const saved = localStorage.getItem('selectedPersonality');
+            if (saved && (saved in PERSONALITIES)) {
+                setPersonality(saved as PersonalityKey);
+            }
+        } catch { }
     }, []);
 
     const loadMessages = async () => {
@@ -119,6 +127,14 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
         setDevMode(newDevMode);
     };
 
+    const handlePersonalityChange = (value: string) => {
+        const key = (value in PERSONALITIES ? value : 'assistant') as PersonalityKey;
+        setPersonality(key);
+        try {
+            localStorage.setItem('selectedPersonality', key);
+        } catch { }
+    };
+
     return (
         <div
             className="flex flex-col h-[calc(100vh-16rem)] rounded-xl shadow-xl border overflow-hidden"
@@ -168,7 +184,7 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
                                 borderColor: currentTheme.colors.border,
                             }}
                             value={personality}
-                            onChange={(e) => setPersonality(e.target.value as PersonalityKey)}
+                            onChange={(e) => handlePersonalityChange(e.target.value)}
                         >
                             {Object.entries(PERSONALITIES).map(([key, meta]) => (
                                 <option key={key} value={key}>{meta.label}</option>
@@ -193,10 +209,13 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
                 isLoading={isLoading}
                 messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
                 assistantLabel={PERSONALITIES[personality]?.label || 'AI Assistant'}
+                onQuickPrompt={(text) => handleSendMessage(text)}
+                showSecondarySuggestions={!isLoading && draft.trim().length === 0}
             />
 
             <MessageInput
                 onSendMessage={handleSendMessage}
+                onInputChange={(text) => setDraft(text)}
                 disabled={isLoading}
             />
 
