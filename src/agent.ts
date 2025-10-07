@@ -27,7 +27,7 @@ const handleImageApprovalFlow = async (
 
     if (approved) {
         loader.update(`executing tool: ${toolCall.function.name}`);
-        const toolResponse = await runTool(toolCall, userMessage, personality);
+        const toolResponse = await runTool(toolCall, userMessage);
 
         loader.update(`done: ${toolCall.function.name}`);
         await saveToolResponse(toolCall.id, toolResponse, sessionId);
@@ -56,6 +56,21 @@ export const runAgent = async ({
     sessionId?: string;
     personality?: PersonalityKey;
 }) => {
+    console.log('=== AGENT START ===');
+    console.log('User message:', userMessage.substring(0, 100) + '...');
+    console.log('Is approval:', isApproval);
+    console.log('Session ID:', sessionId);
+    console.log('Personality:', personality);
+    console.log('Tools count:', tools.length);
+
+    try {
+        const history = await getMessages(sessionId);
+        console.log('History loaded, message count:', history.length);
+    } catch (error) {
+        console.error('Failed to load message history:', error);
+        throw error;
+    }
+
     const history = await getMessages(sessionId);
 
     // Handle approval flow if this is an approval response
@@ -68,7 +83,7 @@ export const runAgent = async ({
             let structuredOutput: any = null;
 
             if (approved) {
-                const toolResponse = await runTool(toolCall, userMessage, personality);
+                const toolResponse = await runTool(toolCall, userMessage);
                 await saveToolResponse(toolCall.id, toolResponse, sessionId);
 
                 // Parse structured output from tool response
@@ -114,9 +129,28 @@ export const runAgent = async ({
     let pendingStructuredOutput: any = null;
 
     while (true) {
+        console.log('=== LLM CALL START ===');
         const history = await getMessages(sessionId);
+        console.log('Current history length:', history.length);
+
         const systemDirectives = getPersonalityDirectives(personality);
-        const response = await runLLM({ messages: history, tools, systemPrompt: systemDirectives });
+        console.log('System directives length:', systemDirectives?.length || 0);
+
+        let response;
+        try {
+            response = await runLLM({ messages: history, tools, systemPrompt: systemDirectives });
+            console.log('=== LLM CALL SUCCESS ===');
+            console.log('Response has content:', !!response.content);
+            console.log('Response has tool_calls:', !!response.tool_calls);
+            if (response.tool_calls) {
+                console.log('Tool calls count:', response.tool_calls.length);
+                console.log('First tool call name:', (response.tool_calls[0] as any)?.function?.name);
+            }
+        } catch (error) {
+            console.error('=== LLM CALL FAILED ===');
+            console.error('LLM error:', error);
+            throw error;
+        }
 
         if (response.content) {
             loader.stop();
@@ -153,9 +187,13 @@ export const runAgent = async ({
         }
 
         if (response.tool_calls) {
+            console.log('=== TOOL EXECUTION START ===');
             const toolCall = response.tool_calls[0];
+            console.log('Tool call name:', (toolCall as any).function.name);
+            console.log('Tool call arguments:', (toolCall as any).function.arguments);
 
             if ((toolCall as any).function.name === generateImageToolDefinition.name) {
+                console.log('=== IMAGE GENERATION APPROVAL NEEDED ===');
                 loader.stop();
                 logMessage(response);
                 // Return with approval needed flag
@@ -170,14 +208,38 @@ export const runAgent = async ({
             logMessage(response);
 
             loader.update(`executing: ${(toolCall as any).function.name}`);
-            const toolResponse = await runTool(toolCall, userMessage, personality);
-            await saveToolResponse((toolCall as any).id, toolResponse, sessionId);
+
+            let toolResponse;
+            try {
+                console.log('=== RUNNING TOOL ===');
+                toolResponse = await runTool(toolCall, userMessage, personality);
+                console.log('=== TOOL EXECUTION SUCCESS ===');
+                console.log('Tool response length:', toolResponse?.length || 0);
+            } catch (error) {
+                console.error('=== TOOL EXECUTION FAILED ===');
+                console.error('Tool error:', error);
+                throw error;
+            }
+
+            try {
+                await saveToolResponse((toolCall as any).id, toolResponse, sessionId);
+                console.log('Tool response saved successfully');
+            } catch (error) {
+                console.error('Failed to save tool response:', error);
+                throw error;
+            }
+
             loader.update(`done: ${(toolCall as any).function.name}`);
 
             // Parse structured output from tool response and store for later
-            const structuredOutput = parseToolResponse((toolCall as any).function.name, toolResponse);
-            if (structuredOutput) {
-                pendingStructuredOutput = structuredOutput;
+            try {
+                const structuredOutput = parseToolResponse((toolCall as any).function.name, toolResponse);
+                if (structuredOutput) {
+                    console.log('Structured output parsed:', structuredOutput.type);
+                    pendingStructuredOutput = structuredOutput;
+                }
+            } catch (error) {
+                console.error('Failed to parse tool response:', error);
             }
         }
     }

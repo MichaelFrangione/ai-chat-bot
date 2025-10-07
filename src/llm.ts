@@ -22,49 +22,59 @@ export const runLLM = async ({
     const formattedTools = tools.map(zodFunction);
     const summary = await getSummary(sessionId);
 
-    const response = await openai.chat.completions.create({
-        model: 'gpt-5-nano',
-        temperature,
-        messages: [
-            {
-                role: 'system',
-                content: `${systemPrompt || defaultSystemPrompt
-                    }. Conversation summary so far: ${summary}`,
-            },
-            ...messages,
-        ],
-        ...(formattedTools.length > 0 && {
-            tools: formattedTools,
-            tool_choice: 'auto',
-            parallel_tool_calls: false,
-        }),
-    });
+    try {
+        const response = await openai.chat.completions.create({
+            model: 'gpt-5-nano',
+            temperature,
+            messages: [
+                {
+                    role: 'system',
+                    content: `${systemPrompt || defaultSystemPrompt
+                        }. Conversation summary so far: ${summary}`,
+                },
+                ...messages,
+            ],
+            ...(formattedTools.length > 0 && {
+                tools: formattedTools,
+                tool_choice: 'auto',
+                parallel_tool_calls: false,
+            }),
+        });
 
-    return response.choices[0].message;
+        return response.choices[0].message;
+    } catch (error) {
+        console.error('OpenAI API error:', error);
+        throw error;
+    }
 };
 
 export const runApprovalCheck = async (userMessage: string) => {
-    const result = await openai.chat.completions.parse({
-        model: 'gpt-5-nano',
-        temperature: 1,
-        response_format: zodResponseFormat(
-            z.object({
-                approved: z
-                    .boolean()
-                    .describe('did the user approve the action or not'),
-            }),
-            'approval'
-        ),
-        messages: [
-            {
-                role: 'system',
-                content: `Determine if the user approved the image generation. If you are not sure, then it is not approved.`,
-            },
-            { role: 'user', content: userMessage },
-        ],
-    });
+    try {
+        const result = await openai.chat.completions.parse({
+            model: 'gpt-5-nano',
+            temperature: 1,
+            response_format: zodResponseFormat(
+                z.object({
+                    approved: z
+                        .boolean()
+                        .describe('did the user approve the action or not'),
+                }),
+                'approval'
+            ),
+            messages: [
+                {
+                    role: 'system',
+                    content: `Determine if the user approved the image generation. If you are not sure, then it is not approved.`,
+                },
+                { role: 'user', content: userMessage },
+            ],
+        });
 
-    return result.choices[0].message.parsed?.approved;
+        return result.choices[0].message.parsed?.approved;
+    } catch (error) {
+        console.error('OpenAI approval check error:', error);
+        throw error;
+    }
 };
 
 export const summarizeMessages = async (messages: AIMessage[], sessionId?: string) => {
