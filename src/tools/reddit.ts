@@ -7,10 +7,10 @@ import { PersonalityKey } from "../constants/personalities";
 export const redditToolDefinition = {
     name: "reddit",
     parameters: z.object({
-        limit: z.number().nullable().describe("Number of posts to return (default: 10, max: 25). Use null for default."),
+        limit: z.number().nullable().describe("Number of posts to return. Use 1 for single post requests, higher numbers for multiple posts (max: 25). Use null for default (5)."),
         subreddit: z.string().nullable().describe("Specific subreddit to search (e.g., 'funny', 'news'). Use null for r/all.")
     }),
-    description: "Search for posts on Reddit. Can filter by subreddit or limit results.",
+    description: "Fetch actual posts from Reddit. Use this tool whenever the user asks for Reddit posts, content, or links - even for single posts. Always use this tool for Reddit-related requests.",
 };
 
 type Args = z.infer<typeof redditToolDefinition.parameters>;
@@ -19,19 +19,62 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs, personality }: { 
     const { limit, subreddit } = toolArgs;
 
     // Handle nullable values
-    const actualLimit = limit ?? 10;
+    const actualLimit = limit ?? 5;
     const actualSubreddit = subreddit ?? null;
+
+    // Check for Reddit API credentials
+    if (!process.env.REDDIT_CLIENT_ID || !process.env.REDDIT_CLIENT_SECRET) {
+        console.error('Reddit API credentials not configured');
+        return JSON.stringify({
+            type: 'reddit_posts' as const,
+            data: {
+                posts: [],
+                sortBy: 'hot',
+                subreddit: actualSubreddit || undefined,
+                error: true
+            },
+            metadata: {
+                title: 'Reddit Posts',
+                description: 'Reddit API not configured'
+            },
+            contextualMessage: 'Sorry, Reddit integration is not configured. Please set up Reddit API credentials.'
+        });
+    }
 
     // Build the URL based on parameters
     const subredditPath = actualSubreddit ? `r/${actualSubreddit}` : 'r/all';
 
     try {
         console.log('=== REDDIT API CALL START ===');
-        console.log('Fetching URL:', `https://www.reddit.com/${subredditPath}.json`);
+        console.log('Using official Reddit API');
+        console.log('Subreddit:', subredditPath);
+        console.log('Limit:', actualLimit);
+        console.log('Full URL:', `https://oauth.reddit.com/r/${actualSubreddit || 'all'}/hot?limit=${actualLimit}`);
 
-        const response = await fetch(`https://www.reddit.com/${subredditPath}.json`, {
+        // First, get an access token
+        const tokenResponse = await fetch('https://www.reddit.com/api/v1/access_token', {
+            method: 'POST',
             headers: {
-                'User-Agent': 'Chatbot-Agent/1.0 (Educational Project)',
+                'Authorization': `Basic ${Buffer.from(`${process.env.REDDIT_CLIENT_ID}:${process.env.REDDIT_CLIENT_SECRET}`).toString('base64')}`,
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'User-Agent': 'Chatbot-Agent/1.0 by YourUsername'
+            },
+            body: 'grant_type=client_credentials'
+        });
+        if (!tokenResponse.ok) {
+            throw new Error(`Failed to get Reddit access token: ${tokenResponse.status}`);
+        }
+
+        const tokenData = await tokenResponse.json() as any;
+        const accessToken = tokenData.access_token;
+
+        console.log('Reddit access token obtained');
+
+        // Now fetch posts using the official API
+        const response = await fetch(`https://oauth.reddit.com/r/${actualSubreddit || 'all'}/hot?limit=${actualLimit}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'User-Agent': 'Chatbot-Agent/1.0 by YourUsername'
             }
         });
 
@@ -40,6 +83,9 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs, personality }: { 
 
         if (!response.ok) {
             console.error('Reddit API returned error status:', response.status, response.statusText);
+            // Let's see what error we're getting
+            const errorText = await response.text();
+            console.error('Reddit API error response:', errorText.substring(0, 500));
             throw new Error(`Reddit API returned ${response.status}: ${response.statusText}`);
         }
 
@@ -48,7 +94,6 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs, personality }: { 
 
         if (!contentType || !contentType.includes('application/json')) {
             console.error('Reddit API returned non-JSON content type:', contentType);
-            // Let's see what we actually got
             const text = await response.text();
             console.error('Non-JSON response body (first 200 chars):', text.substring(0, 200));
             throw new Error('Reddit API returned non-JSON response');
@@ -78,8 +123,7 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs, personality }: { 
             domain: child.data.domain,
         }));
 
-        // Apply limit
-        posts = posts.slice(0, Math.min(actualLimit, 25));
+        console.log(`Reddit API returned ${posts.length} posts (requested ${actualLimit})`);
 
         const title = actualSubreddit ? `Top Posts from r/${actualSubreddit}` : "Top Reddit Posts";
         const description = actualSubreddit

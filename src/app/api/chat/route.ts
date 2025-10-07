@@ -27,6 +27,8 @@ export async function POST(request: NextRequest) {
             hasRedisToken: !!process.env.UPSTASH_REDIS_REST_TOKEN,
             hasVectorUrl: !!process.env.UPSTASH_VECTOR_REST_URL,
             hasVectorToken: !!process.env.UPSTASH_VECTOR_REST_TOKEN,
+            hasRedditClientId: !!process.env.REDDIT_CLIENT_ID,
+            hasRedditClientSecret: !!process.env.REDDIT_CLIENT_SECRET,
         });
 
         if (!process.env.OPENAI_API_KEY) {
