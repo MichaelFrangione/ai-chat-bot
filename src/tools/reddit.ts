@@ -26,22 +26,37 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs, personality }: { 
     const subredditPath = actualSubreddit ? `r/${actualSubreddit}` : 'r/all';
 
     try {
+        console.log('=== REDDIT API CALL START ===');
+        console.log('Fetching URL:', `https://www.reddit.com/${subredditPath}.json`);
+
         const response = await fetch(`https://www.reddit.com/${subredditPath}.json`, {
             headers: {
                 'User-Agent': 'Chatbot-Agent/1.0 (Educational Project)',
             }
         });
 
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
         if (!response.ok) {
+            console.error('Reddit API returned error status:', response.status, response.statusText);
             throw new Error(`Reddit API returned ${response.status}: ${response.statusText}`);
         }
 
         const contentType = response.headers.get('content-type');
+        console.log('Content-Type:', contentType);
+
         if (!contentType || !contentType.includes('application/json')) {
+            console.error('Reddit API returned non-JSON content type:', contentType);
+            // Let's see what we actually got
+            const text = await response.text();
+            console.error('Non-JSON response body (first 200 chars):', text.substring(0, 200));
             throw new Error('Reddit API returned non-JSON response');
         }
 
+        console.log('Attempting to parse JSON response...');
         const responseData = await response.json() as any;
+        console.log('JSON parsing successful');
 
         if (!responseData || !responseData.data) {
             throw new Error('Invalid Reddit API response format');
@@ -91,8 +106,10 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs, personality }: { 
             contextualMessage
         };
 
+        console.log('=== REDDIT API CALL SUCCESS ===');
         return JSON.stringify(structuredOutput);
     } catch (error) {
+        console.error('=== REDDIT API CALL FAILED ===');
         console.error('Reddit API error:', error);
 
         // Return a structured error response
