@@ -24,50 +24,93 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs, personality }: { 
 
     // Build the URL based on parameters
     const subredditPath = actualSubreddit ? `r/${actualSubreddit}` : 'r/all';
-    const { data } = await fetch(`https://www.reddit.com/${subredditPath}.json`)
-        .then(res => res.json()) as any;
 
-    let posts = data.children.map((child: any) => ({
-        title: child.data.title,
-        link: child.data.url,
-        subreddit: child.data.subreddit,
-        author: child.data.author,
-        upvotes: child.data.ups,
-        comments: child.data.num_comments || 0,
-        redditUrl: `https://reddit.com${child.data.permalink}`,
-        thumbnail: child.data.thumbnail && child.data.thumbnail !== 'self' && child.data.thumbnail !== 'default' ?
-            child.data.thumbnail.replace(/&amp;/g, '&') : null,
-        isVideo: child.data.is_video || false,
-        domain: child.data.domain,
-    }));
+    try {
+        const response = await fetch(`https://www.reddit.com/${subredditPath}.json`, {
+            headers: {
+                'User-Agent': 'Chatbot-Agent/1.0 (Educational Project)',
+            }
+        });
 
-    // Apply limit
-    posts = posts.slice(0, Math.min(actualLimit, 25));
+        if (!response.ok) {
+            throw new Error(`Reddit API returned ${response.status}: ${response.statusText}`);
+        }
 
-    const title = actualSubreddit ? `Top Posts from r/${actualSubreddit}` : "Top Reddit Posts";
-    const description = actualSubreddit
-        ? `Current trending posts from r/${actualSubreddit}`
-        : "Current trending posts from across Reddit";
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Reddit API returned non-JSON response');
+        }
 
-    let contextualMessage = `Found ${posts.length} ${actualSubreddit ? `posts from r/${actualSubreddit}` : 'trending Reddit posts'}`;
+        const responseData = await response.json() as any;
 
-    if (personality && personality !== 'assistant') {
-        contextualMessage = await styleWithPersona(contextualMessage, personality, 'reddit posts');
+        if (!responseData || !responseData.data) {
+            throw new Error('Invalid Reddit API response format');
+        }
+
+        const { data } = responseData;
+
+        let posts = data.children.map((child: any) => ({
+            title: child.data.title,
+            link: child.data.url,
+            subreddit: child.data.subreddit,
+            author: child.data.author,
+            upvotes: child.data.ups,
+            comments: child.data.num_comments || 0,
+            redditUrl: `https://reddit.com${child.data.permalink}`,
+            thumbnail: child.data.thumbnail && child.data.thumbnail !== 'self' && child.data.thumbnail !== 'default' ?
+                child.data.thumbnail.replace(/&amp;/g, '&') : null,
+            isVideo: child.data.is_video || false,
+            domain: child.data.domain,
+        }));
+
+        // Apply limit
+        posts = posts.slice(0, Math.min(actualLimit, 25));
+
+        const title = actualSubreddit ? `Top Posts from r/${actualSubreddit}` : "Top Reddit Posts";
+        const description = actualSubreddit
+            ? `Current trending posts from r/${actualSubreddit}`
+            : "Current trending posts from across Reddit";
+
+        let contextualMessage = `Found ${posts.length} ${actualSubreddit ? `posts from r/${actualSubreddit}` : 'trending Reddit posts'}`;
+
+        if (personality && personality !== 'assistant') {
+            contextualMessage = await styleWithPersona(contextualMessage, personality, 'reddit posts');
+        }
+
+        const structuredOutput = {
+            type: 'reddit_posts' as const,
+            data: {
+                posts,
+                sortBy: 'hot',
+                subreddit: actualSubreddit || undefined
+            },
+            metadata: {
+                title,
+                description
+            },
+            contextualMessage
+        };
+
+        return JSON.stringify(structuredOutput);
+    } catch (error) {
+        console.error('Reddit API error:', error);
+
+        // Return a structured error response
+        const errorOutput = {
+            type: 'reddit_posts' as const,
+            data: {
+                posts: [],
+                sortBy: 'hot',
+                subreddit: actualSubreddit || undefined,
+                error: true
+            },
+            metadata: {
+                title: 'Reddit Posts',
+                description: 'Unable to fetch Reddit posts at this time'
+            },
+            contextualMessage: `Sorry, I couldn't fetch Reddit posts right now. ${error instanceof Error ? error.message : 'Unknown error occurred'}.`
+        };
+
+        return JSON.stringify(errorOutput);
     }
-
-    const structuredOutput = {
-        type: 'reddit_posts' as const,
-        data: {
-            posts,
-            sortBy: 'hot',
-            subreddit: actualSubreddit || undefined
-        },
-        metadata: {
-            title,
-            description
-        },
-        contextualMessage
-    };
-
-    return JSON.stringify(structuredOutput);
 };
