@@ -3,6 +3,8 @@ import { dadJokeToolDefinition } from '../../src/tools/dadJoke';
 import { generateImageToolDefinition } from '../../src/tools/generateImage';
 import { movieSearchToolDefinition } from '../../src/tools/movieSearch';
 import { redditToolDefinition } from '../../src/tools/reddit';
+import { youtubeTranscriberToolDefinition } from '../../src/tools/youtubeTranscriber';
+import { websiteScraperToolDefinition } from '../../src/tools/websiteScraper';
 import { runEval } from '../evalTools';
 import { ToolCallMatch } from '../scorers';
 
@@ -18,7 +20,14 @@ const createToolCallMessage = (toolName: string) => ({
     ],
 });
 
-const allTools = [dadJokeToolDefinition, generateImageToolDefinition, redditToolDefinition, movieSearchToolDefinition];
+const allTools = [
+    dadJokeToolDefinition,
+    generateImageToolDefinition,
+    redditToolDefinition,
+    movieSearchToolDefinition,
+    youtubeTranscriberToolDefinition,
+    websiteScraperToolDefinition
+];
 
 runEval('allTools', {
     task: (input) =>
@@ -42,6 +51,14 @@ runEval('allTools', {
         {
             input: 'what movies did Christopher Nolan direct?',
             expected: createToolCallMessage(movieSearchToolDefinition.name),
+        },
+        {
+            input: 'https://www.youtube.com/watch?v=abc123 what are the main points in this video?',
+            expected: createToolCallMessage(youtubeTranscriberToolDefinition.name),
+        },
+        {
+            input: 'summarize this article: https://example.com/news-article',
+            expected: createToolCallMessage(websiteScraperToolDefinition.name),
         },
     ],
     scorers: [ToolCallMatch],

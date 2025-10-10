@@ -2,7 +2,8 @@ import { dadJokeToolDefinition } from "./dadJoke";
 import { generateImageToolDefinition } from "./generateImage";
 import { movieSearchToolDefinition } from "./movieSearch";
 import { redditToolDefinition } from "./reddit";
-import { youtubeTranscriberToolDefinition } from "./YoutubeTranscriber";
+import { youtubeTranscriberToolDefinition } from "./youtubeTranscriber";
+import { websiteScraperToolDefinition } from "./websiteScraper";
 
 export const tools = [
     dadJokeToolDefinition,
@@ -10,4 +11,5 @@ export const tools = [
     redditToolDefinition,
     movieSearchToolDefinition,
     youtubeTranscriberToolDefinition,
+    websiteScraperToolDefinition,
 ];

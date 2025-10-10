@@ -3,8 +3,9 @@ import { dadJoke, dadJokeToolDefinition } from "./tools/dadJoke";
 import { generateImage, generateImageToolDefinition } from "./tools/generateImage";
 import { reddit, redditToolDefinition } from "./tools/reddit";
 import { movieSearch, movieSearchToolDefinition } from "./tools/movieSearch";
-import { youtubeTranscriber, youtubeTranscriberToolDefinition } from "./tools/YoutubeTranscriber";
+import { youtubeTranscriber, youtubeTranscriberToolDefinition } from "./tools/youtubeTranscriber";
 import { PersonalityKey } from "./constants/personalities";
+import { websiteScraper, websiteScraperToolDefinition } from "./tools/websiteScraper";
 
 export const runTool = async (
     toolCall: OpenAI.Chat.Completions.ChatCompletionMessageToolCall,
@@ -85,6 +86,9 @@ export const runTool = async (
                 break;
             case youtubeTranscriberToolDefinition.name:
                 result = await youtubeTranscriber(input);
+                break;
+            case websiteScraperToolDefinition.name:
+                result = await websiteScraper(input);
                 break;
             default:
                 result = `Unknown tool do not call this tool: ${(toolCall as any).function.name}`;

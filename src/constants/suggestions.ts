@@ -11,6 +11,7 @@ export const SUGGESTIONS: string[] = [
     'What can you do?',
     'Suggest an underrated thriller',
     'Summarize a YouTube video for me',
+    'Summarize an new article from the web',
 ];
 
 export function pickRandomSuggestions(count = 4): string[] {

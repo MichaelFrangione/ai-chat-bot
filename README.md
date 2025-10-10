@@ -7,9 +7,10 @@ A modern AI-powered chatbot built with Next.js and OpenAI's GPT models. The agen
 ### Core Capabilities
 - **Interactive Chat Interface**: Clean, responsive web UI with React and Tailwind CSS
 - **Multi-Tool Agent**: Integrates specialized tools for different tasks
+- **Personality System**: 4 distinct AI personalities (Assistant, Pirate, Murderbot, The Good Boy)
 - **Structured Output**: Rich, formatted responses with custom components
 - **Approval System**: User approval for sensitive operations like image generation
-- **Memory Management**: Persistent conversation history
+- **Memory Management**: Persistent conversation history with Upstash Redis (production) or LowDB (development)
 - **RAG Integration**: Vector search for movie recommendations
 - **Theme Support**: Multiple visual themes with dynamic switching
 
@@ -25,13 +26,40 @@ A modern AI-powered chatbot built with Next.js and OpenAI's GPT models. The agen
    - Requires user approval before generation
    - Displays images with download links
 
-3. **😄 Dad Jokes**
+3. **📺 YouTube Transcriber**
+   - Analyze YouTube videos by transcribing and searching their content
+   - Answer questions about video content
+   - Summarize videos or find specific information
+   - Uses embeddings for semantic search across transcripts
+
+4. **🌐 Website Scraper**
+   - Extract and analyze content from articles and web pages
+   - Answer questions about article content
+   - Summarize articles or find specific information
+   - Uses Mozilla Readability for clean text extraction
+
+5. **😄 Dad Jokes**
    - Fetch random dad jokes from icanhazdadjoke.com
    - Simple entertainment feature
 
-4. **🔗 Reddit Posts**
+6. **🔗 Reddit Posts**
    - Browse trending posts from Reddit
    - Shows title, subreddit, author, and upvotes
+
+### Personality System
+
+The chatbot features 4 distinct personalities that affect how responses are delivered:
+
+1. **Assistant** (Default) - Professional, clear, and helpful
+2. **Pirate** 🏴‍☠️ - Whimsical pirate with nautical metaphors and swagger
+3. **Murderbot** 🤖 - Sardonic, reluctant robotic security unit (inspired by Martha Wells' novels)
+4. **The Good Boy** 🐕 - Enthusiastic, loyal Golden Retriever personality
+
+**Personality Features:**
+- Consistent character voice across all tool responses
+- Integrated into YouTube transcriber and website scraper tools
+- Maintains personality throughout entire responses
+- Each personality has unique loading text
 
 ### Theme System
 
@@ -65,10 +93,14 @@ The application includes a comprehensive theme system with 5 distinct visual the
 - **Tailwind CSS** - Styling
 
 ### Backend & AI
-- **OpenAI GPT-4** - Language model
+- **OpenAI GPT-5-nano** - Language model
 - **DALL-E 3** - Image generation
+- **Upstash Redis** - Session management and memory (production)
 - **Upstash Vector** - Vector database for movie search
-- **LowDB** - JSON database for memory
+- **LowDB** - JSON database for memory (development)
+- **youtubei.js** - YouTube transcript extraction
+- **Mozilla Readability** - Article content extraction
+- **JSDOM** - HTML parsing for web scraping
 
 ### Development Tools
 - **Autoevals** - Testing framework
@@ -79,6 +111,7 @@ The application includes a comprehensive theme system with 5 distinct visual the
 
 - **Node.js 20+** or **Bun**
 - **OpenAI API Key** - Get from [OpenAI Platform](https://platform.openai.com/settings/organization/api-keys)
+- **Upstash Redis** - For production session management (optional, uses LowDB in development)
 - **Upstash Vector Database** - For movie search (optional)
 
 ## 🚀 Quick Start
@@ -99,7 +132,18 @@ Create a `.env` file:
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-### 3. Set Up Movie Database (Optional)
+### 3. Set Up Production Memory (Optional)
+
+For production deployments, configure Upstash Redis for session management:
+
+```env
+UPSTASH_REDIS_REST_URL=your_upstash_redis_url
+UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
+```
+
+*Note: In development, the app uses LowDB (db.json) for local storage.*
+
+### 4. Set Up Movie Database (Optional)
 
 ```env
 UPSTASH_VECTOR_REST_URL=your_upstash_vector_url
@@ -110,7 +154,7 @@ UPSTASH_VECTOR_REST_TOKEN=your_upstash_vector_token
 npm run ingest
 ```
 
-### 4. Run the App
+### 5. Run the App
 
 ```bash
 npm run dev
@@ -123,11 +167,14 @@ Visit `http://localhost:3000`
 ### Web Interface
 
 1. Open `http://localhost:3000`
-2. **Choose a Theme**: Use the theme dropdown to select your preferred visual style
-3. Start chatting with the AI
-4. Try these examples:
+2. **Choose a Personality**: Select your preferred AI personality (Assistant, Pirate, Murderbot, or The Good Boy)
+3. **Choose a Theme**: Use the theme dropdown to select your preferred visual style
+4. Start chatting with the AI
+5. Try these examples:
    - "Find me some action movies from the 90s"
    - "Generate an image of a futuristic city"
+   - "https://www.youtube.com/watch?v=... what are the main points in this video?"
+   - "Summarize this article: https://example.com/article"
    - "Tell me a dad joke"
    - "What's trending on Reddit?"
 
@@ -152,72 +199,8 @@ npm run eval
 # Run specific tests
 npm run eval movieSearch
 npm run eval generateImage
+npm run eval youtubeTranscriber
+npm run eval websiteScraper
 npm run eval dadJoke
 npm run eval reddit
 ```
-
-## 📁 Project Structure
-
-```
-chatbot-agent/
-├── src/
-│   ├── agent.ts              # Main agent logic
-│   ├── ai.ts                 # OpenAI client
-│   ├── app/                  # Next.js app
-│   │   ├── api/              # API routes
-│   │   └── page.tsx          # Main page
-│   ├── components/           # React components
-│   │   ├── ChatInterface.tsx # Chat UI
-│   │   ├── MessageBubble.tsx # Message display
-│   │   ├── MessageInput.tsx  # Input component
-│   │   ├── ApprovalDialog.tsx # Approval workflow
-│   │   ├── ThemeSwitcher.tsx # Theme selection
-│   │   ├── ThemeWrapper.tsx  # Theme context provider
-│   │   └── structured/       # Output components
-│   ├── constants/            # Theme definitions
-│   │   └── themes.ts         # Theme configurations
-│   ├── contexts/             # React contexts
-│   │   └── ThemeContext.tsx  # Theme state management
-│   ├── tools/                # Agent tools
-│   │   ├── index.ts          # Tool exports
-│   │   ├── movieSearch.ts    # Movie search
-│   │   ├── generateImage.ts  # Image generation
-│   │   ├── dadJoke.ts        # Dad jokes
-│   │   └── reddit.ts         # Reddit posts
-│   ├── rag/                  # Vector search
-│   │   ├── ingest.ts         # Data ingestion
-│   │   ├── query.ts          # Search queries
-│   │   └── types.ts          # Types
-│   └── lib/                  # Utilities
-├── evals/                    # Testing
-│   ├── experiments/          # Test cases
-│   └── run.ts               # Test runner
-└── db.json                  # Storage
-```
-
-## 🔧 Development
-
-### Adding New Tools
-
-1. Create tool file in `src/tools/`
-2. Define schema with Zod
-3. Implement tool function
-4. Export from `src/tools/index.ts`
-5. Add tests in `evals/experiments/`
-
-### Customizing
-
-- **System Prompt**: `src/systemPrompt.ts`
-- **Memory**: `src/memory.ts`
-- **UI**: `src/components/`
-- **API**: `src/app/api/`
-- **Themes**: `src/constants/themes.ts`
-- **Theme Context**: `src/contexts/ThemeContext.tsx`
-
-## 📝 License
-
-MIT License
-
----
-
-**Happy chatting! 🤖✨**
