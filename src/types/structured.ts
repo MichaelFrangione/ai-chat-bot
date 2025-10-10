@@ -65,4 +65,27 @@ export interface RedditPostsOutput {
     contextualMessage?: string;
 }
 
-export type StructuredOutput = MovieRecommendationsOutput | ImageGenerationOutput | RedditPostsOutput;
+export interface YoutubeTranscriptChunk {
+    text: string;
+    score: number;
+    metadata: {
+        source: string;
+        video_id: string;
+        title: string;
+        timestamp: number;
+    };
+}
+
+export interface YoutubeTranscriberOutput {
+    type: 'youtube_transcriber';
+    data: {
+        relevant: YoutubeTranscriptChunk[];
+    };
+    metadata: {
+        title: string;
+        description: string;
+    };
+    contextualMessage?: string;
+}
+
+export type StructuredOutput = MovieRecommendationsOutput | ImageGenerationOutput | RedditPostsOutput | YoutubeTranscriberOutput;

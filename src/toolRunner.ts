@@ -3,6 +3,7 @@ import { dadJoke, dadJokeToolDefinition } from "./tools/dadJoke";
 import { generateImage, generateImageToolDefinition } from "./tools/generateImage";
 import { reddit, redditToolDefinition } from "./tools/reddit";
 import { movieSearch, movieSearchToolDefinition } from "./tools/movieSearch";
+import { youtubeTranscriber, youtubeTranscriberToolDefinition } from "./tools/YoutubeTranscriber";
 import { PersonalityKey } from "./constants/personalities";
 
 export const runTool = async (
@@ -81,6 +82,9 @@ export const runTool = async (
                 break;
             case movieSearchToolDefinition.name:
                 result = await movieSearch(input);
+                break;
+            case youtubeTranscriberToolDefinition.name:
+                result = await youtubeTranscriber(input);
                 break;
             default:
                 result = `Unknown tool do not call this tool: ${(toolCall as any).function.name}`;

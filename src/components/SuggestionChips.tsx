@@ -41,5 +41,3 @@ export default function SuggestionChips({ count = 4, onQuickPrompt }: Suggestion
         </div>
     );
 }
-
-

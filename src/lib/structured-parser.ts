@@ -1,4 +1,4 @@
-import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput, RedditPostsOutput } from '../types/structured';
+import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput, RedditPostsOutput, YoutubeTranscriberOutput } from '../types/structured';
 
 export function parseAssistantResponse(content: string): StructuredOutput | null {
     // Try to parse JSON responses from assistant
@@ -36,6 +36,7 @@ export function parseToolResponse(toolName: string, response: string): Structure
     if (toolName === 'reddit') {
         return parseRedditResponse(response);
     }
+    // youtubeTranscriber now returns plain text, not structured output
     return null;
 }
 

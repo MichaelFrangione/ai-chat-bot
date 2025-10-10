@@ -10,6 +10,7 @@ export const SUGGESTIONS: string[] = [
     'Create a cyberpunk city image',
     'What can you do?',
     'Suggest an underrated thriller',
+    'Summarize a YouTube video for me',
 ];
 
 export function pickRandomSuggestions(count = 4): string[] {

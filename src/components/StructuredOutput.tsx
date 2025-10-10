@@ -4,6 +4,7 @@ import { StructuredOutput } from '@/types/structured';
 import MovieRecommendations from './structured/MovieRecommendations';
 import ImageGeneration from './structured/ImageGeneration';
 import RedditPosts from './structured/RedditPosts';
+import YoutubeTranscript from './structured/YoutubeTranscript';
 
 interface StructuredOutputProps {
     output: StructuredOutput;
@@ -17,6 +18,8 @@ export default function StructuredOutputComponent({ output }: StructuredOutputPr
             return <ImageGeneration output={output} />;
         case 'reddit_posts':
             return <RedditPosts output={output} />;
+        case 'youtube_transcriber':
+            return <YoutubeTranscript output={output} />;
         default:
             return null;
     }
