@@ -43,11 +43,15 @@ TOOL USAGE:
   * "movies about space exploration" → call movie_search with limit: null, genre: null, director: null (use keyword search)
   * General requests like "help me find a movie" → call movie_search with default parameters (limit: 1, genre: null, director: null)
 
-- For YouTube video questions, use the youtubeTranscriber tool:
+- For YouTube video questions, ALWAYS use the youtubeTranscriber tool
+  * ANY youtube.com or youtu.be URL → use youtubeTranscriber
   * "what are all the reasons in this video?" → call youtubeTranscriber with videoUrl and question
   * "summarize this YouTube video" → call youtubeTranscriber with videoUrl and question
   * "what was the final resolution?" → call youtubeTranscriber with videoUrl and question
-  * The tool analyzes the transcript and returns an answer - present this answer naturally to the user
+  * The tool analyzes the video transcript and returns an answer - present this answer naturally to the user
+
+- For article/webpage questions, use the websiteScraper tool:
+  * Use for news articles, blog posts, and regular web pages, not youtube.com or youtu.be URLs
 
 - Always return structured output for Reddit, movie search, and image generation tools - never just text responses.
 `;
