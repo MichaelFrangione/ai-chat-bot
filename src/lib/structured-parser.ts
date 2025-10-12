@@ -1,4 +1,4 @@
-import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput, RedditPostsOutput, YoutubeTranscriberOutput } from '../types/structured';
+import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput, RedditPostsOutput } from '../types/structured';
 
 export function parseAssistantResponse(content: string): StructuredOutput | null {
     // Try to parse JSON responses from assistant

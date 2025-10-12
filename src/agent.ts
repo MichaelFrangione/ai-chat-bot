@@ -152,7 +152,9 @@ export const runAgent = async ({
             throw error;
         }
 
-        if (response.content) {
+        // Only exit if we have content and NO tool calls
+        // If we have tool calls, we must execute them even if there's content
+        if (response.content && !response.tool_calls) {
             loader.stop();
             logMessage(response);
 

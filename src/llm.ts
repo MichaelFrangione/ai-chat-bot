@@ -22,6 +22,26 @@ export const runLLM = async ({
     const formattedTools = tools.map(zodFunction);
     const summary = await getSummary(sessionId);
 
+    // Filter out structuredOutput-only messages - they're for frontend display only
+    // These messages break OpenAI's tool call flow expectations
+    const filteredMessages = messages.filter((msg: any) => {
+        // Always keep tool messages (they're responses to tool calls)
+        if (msg.role === 'tool') return true;
+
+        // Always keep user messages
+        if (msg.role === 'user') return true;
+
+        // For assistant messages:
+        // Keep if it has tool_calls (even if it also has structuredOutput)
+        if (msg.tool_calls && msg.tool_calls.length > 0) return true;
+
+        // Keep if it has actual content (even if it also has structuredOutput)
+        if (msg.content && msg.content !== "") return true;
+
+        // Filter out messages that ONLY have structuredOutput
+        return false;
+    });
+
     try {
         const response = await openai.chat.completions.create({
             model: 'gpt-5-nano',
@@ -32,7 +52,7 @@ export const runLLM = async ({
                     content: `${systemPrompt || defaultSystemPrompt
                         }. Conversation summary so far: ${summary}`,
                 },
-                ...messages,
+                ...filteredMessages,
             ],
             ...(formattedTools.length > 0 && {
                 tools: formattedTools,
