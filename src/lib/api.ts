@@ -49,4 +49,19 @@ export class ChatAPI {
 
         return response.json();
     }
+
+    static async resetChat(): Promise<{ success: boolean; message?: string; error?: string; }> {
+        const response = await fetch(`${API_BASE}/reset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return response.json();
+    }
 }

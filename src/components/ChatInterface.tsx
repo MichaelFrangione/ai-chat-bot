@@ -6,7 +6,7 @@ import { ChatAPI } from '@/lib/api';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import ApprovalDialog from './ApprovalDialog';
-import { DEV_CONFIG, toggleDevMode } from '@/config/dev';
+import ChatMenu from './ChatMenu';
 import { PERSONALITIES, PersonalityKey } from '@/constants/personalities';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -30,7 +30,6 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
         toolArgs: any;
         message: string;
     } | null>(null);
-    const [devMode, setDevMode] = useState(DEV_CONFIG.SHOW_TOOL_USAGE);
     const [personality, setPersonality] = useState<PersonalityKey>('assistant');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -122,11 +121,6 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
         }
     };
 
-    const handleToggleDevMode = () => {
-        const newDevMode = toggleDevMode();
-        setDevMode(newDevMode);
-    };
-
     const handlePersonalityChange = (value: string) => {
         const key = (value in PERSONALITIES ? value : 'assistant') as PersonalityKey;
         setPersonality(key);
@@ -155,26 +149,12 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
                 }}
             >
                 <div className="flex items-center justify-between gap-4">
-                    <div>
-                        <h2
-                            className="font-semibold text-lg"
-                            style={{ color: currentTheme.colors.headerText }}
-                        >
-                            {PERSONALITIES[personality]?.label || 'AI Assistant'}
-                        </h2>
-                        <p
-                            className="text-sm opacity-80"
-                            style={{ color: currentTheme.colors.headerText }}
-                        >
-                            Powered by advanced AI with tools
-                        </p>
-                    </div>
                     <div className="flex items-center gap-2">
                         <label
-                            className="text-sm"
+                            className="text-sm font-medium"
                             style={{ color: currentTheme.colors.headerText }}
                         >
-                            Personality
+                            Personality:
                         </label>
                         <select
                             className="text-sm rounded px-2 py-1 border"
@@ -190,17 +170,8 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
                                 <option key={key} value={key}>{meta.label}</option>
                             ))}
                         </select>
-                        <button
-                            onClick={handleToggleDevMode}
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${devMode
-                                ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
-                                : 'bg-white/20 hover:bg-white/30 text-white'
-                                }`}
-                            title={devMode ? 'Dev mode enabled - showing tool usage' : 'Click to enable dev mode'}
-                        >
-                            {devMode ? '🔧 Dev' : '👁️ Normal'}
-                        </button>
                     </div>
+                    <ChatMenu />
                 </div>
             </div>
 
