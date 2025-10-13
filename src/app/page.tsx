@@ -31,7 +31,7 @@ export default function Home() {
                             className="text-3xl font-bold"
                             style={{ color: currentTheme.colors.text }}
                         >
-                            AI Chatbot Agent
+                            EchoBot
                         </h1>
                         <div className="flex items-center gap-3">
                             <span

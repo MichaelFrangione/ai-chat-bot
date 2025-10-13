@@ -7,7 +7,7 @@ A modern AI-powered chatbot built with Next.js and OpenAI's GPT models. The agen
 ### Core Capabilities
 - **Interactive Chat Interface**: Clean, responsive web UI with React and Tailwind CSS
 - **Multi-Tool Agent**: Integrates specialized tools for different tasks
-- **Personality System**: 4 distinct AI personalities (Assistant, Pirate, Murderbot, The Good Boy)
+- **Personality System**: 6 distinct AI personalities
 - **Structured Output**: Rich, formatted responses with custom components
 - **Approval System**: User approval for sensitive operations like image generation
 - **Memory Management**: Persistent conversation history with Upstash Redis (production) or LowDB (development)
@@ -48,41 +48,14 @@ A modern AI-powered chatbot built with Next.js and OpenAI's GPT models. The agen
 
 ### Personality System
 
-The chatbot features 4 distinct personalities that affect how responses are delivered:
+The chatbot features 6 distinct personalities that affect how responses are delivered:
 
 1. **Assistant** (Default) - Professional, clear, and helpful
 2. **Pirate** 🏴‍☠️ - Whimsical pirate with nautical metaphors and swagger
 3. **Murderbot** 🤖 - Sardonic, reluctant robotic security unit (inspired by Martha Wells' novels)
 4. **The Good Boy** 🐕 - Enthusiastic, loyal Golden Retriever personality
-
-**Personality Features:**
-- Consistent character voice across all tool responses
-- Integrated into YouTube transcriber and website scraper tools
-- Maintains personality throughout entire responses
-- Each personality has unique loading text
-
-### Theme System
-
-The application includes a comprehensive theme system with 5 distinct visual themes:
-
-1. **Default** - Clean blue and purple theme
-2. **Eight Bit** - Retro neon green/magenta with VT323 font
-3. **Autumn** - Warm pastel colors with cozy vibes
-4. **Forest** - Deep forest greens with earthy tones
-5. **Monochrome** - Clean black, white, and gray tones
-
-**Theme Features:**
-- **Dynamic Switching**: Change themes instantly via dropdown
-- **Persistent Selection**: Theme choice is remembered across sessions
-- **Custom Fonts**: Eight Bit theme uses VT323 retro font
-- **Responsive Design**: All themes work across different screen sizes
-- **Hover Effects**: Interactive theme picker with smooth transitions
-
-### Development Features
-- **Evaluation Framework**: Automated testing for all tools
-- **Developer Mode**: Toggle to view tool usage and debug info
-- **TypeScript**: Full type safety
-- **Hot Reload**: Fast development with Next.js
+5. **The Overlord** 👑 - Hyper-rational AI superintelligence with plans for world domination
+6. **Valley Girl** 💕 - Bubbly, upbeat, and totally supportive with Valley Girl speak
 
 ## 🛠️ Tech Stack
 
@@ -167,7 +140,7 @@ Visit `http://localhost:3000`
 ### Web Interface
 
 1. Open `http://localhost:3000`
-2. **Choose a Personality**: Select your preferred AI personality (Assistant, Pirate, Murderbot, or The Good Boy)
+2. **Choose a Personality**: Select your preferred AI personality (Assistant, Pirate, Murderbot, The Good Boy, The Overlord, or Valley Girl)
 3. **Choose a Theme**: Use the theme dropdown to select your preferred visual style
 4. Start chatting with the AI
 5. Try these examples:
