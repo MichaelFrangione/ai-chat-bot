@@ -2,6 +2,10 @@
 
 A modern AI-powered chatbot built with Next.js and OpenAI's GPT models. The agent can perform various tasks through specialized tools and provides rich, interactive responses.
 
+<div align="center">
+  <img src="screenshot.png" alt="EchoBot Chat Interface" width="600" />
+</div>
+
 ## 🚀 Features
 
 ### Core Capabilities
