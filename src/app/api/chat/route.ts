@@ -5,19 +5,57 @@ import {
     UIMessage,
     createUIMessageStream,
     createUIMessageStreamResponse,
-    isToolUIPart
+    isToolUIPart,
+    validateUIMessages,
+    createIdGenerator
 } from 'ai';
 import { dadJokeTool } from '@/tools/dadJoke';
 import { generateImage } from '@/tools/generateImage';
 import { getPersonalityDirectives, PersonalityKey } from '@/constants/personalities';
+import { loadChat, saveChat } from '@/util/simple-chat-store';
 import { z } from 'zod';
 
 export const maxDuration = 30;
 
+// Define tools for validation
+const tools = {
+    dad_joke: dadJokeTool,
+    generate_image: {
+        description: 'Generate an image from a text prompt. Use this when user asks to create, generate, or make an image.',
+        inputSchema: z.object({
+            prompt: z.string().describe('The prompt to generate the image'),
+        }),
+    },
+};
+
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { messages } = body as { messages: UIMessage[]; };
+        const { message, id: chatId } = body as { message?: UIMessage; id?: string; messages?: UIMessage[]; };
+
+        // Support both old format (messages array) and new format (single message + id)
+        let messages: UIMessage[];
+
+        if (chatId && message) {
+            // New format with persistence
+            const previousMessages = await loadChat(chatId);
+            // Append new message and deduplicate by ID (keeps last occurrence)
+            // This handles tool calls where client sends updated assistant message
+            const allMessages = [...previousMessages, message];
+            messages = Array.from(
+                new Map(allMessages.map(msg => [msg.id, msg])).values()
+            );
+        } else if (body.messages) {
+            // Old format for backward compatibility
+            messages = body.messages;
+        } else {
+            return new Response(JSON.stringify({
+                error: 'Either provide { message, id } or { messages }',
+            }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
         // Read personality from cookie (simple, reliable, server-side) 
         const cookieHeader = req.headers.get('cookie') || '';
@@ -30,6 +68,7 @@ export async function POST(req: Request) {
         const personality = (personalityCookie as PersonalityKey) || 'assistant';
 
         console.log('=== CHAT REQUEST ===');
+        console.log('Chat ID:', chatId);
         console.log('Cookie header:', cookieHeader);
         console.log('Personality from cookie:', personality);
         console.log('Messages count:', messages.length);
@@ -37,8 +76,20 @@ export async function POST(req: Request) {
         const systemPrompt = getPersonalityDirectives(personality);
         console.log('System prompt (first 200 chars):', systemPrompt.substring(0, 200));
 
+        // Validate messages if they contain tools
+        const validatedMessages = await validateUIMessages({
+            messages,
+            tools: tools as any,
+        });
+
+        // Generate server-side message IDs for persistence
+        const messageIdGenerator = createIdGenerator({
+            prefix: 'msg',
+            size: 16,
+        });
+
         // Check if we need to handle image generation approval
-        const lastMessage = messages[messages.length - 1];
+        const lastMessage = validatedMessages[validatedMessages.length - 1];
         let needsImageProcessing = false;
 
         if (lastMessage && lastMessage.parts) {
@@ -53,7 +104,7 @@ export async function POST(req: Request) {
         if (needsImageProcessing) {
             // Use createUIMessageStream to handle image generation
             const stream = createUIMessageStream({
-                originalMessages: messages,
+                originalMessages: validatedMessages,
                 execute: async ({ writer }) => {
                     // Process image generation
                     for (const part of lastMessage.parts) {
@@ -96,20 +147,18 @@ export async function POST(req: Request) {
                     // Continue with normal LLM generation
                     const result = streamText({
                         model: openai('gpt-4o'),
-                        messages: convertToModelMessages(messages),
+                        messages: convertToModelMessages(validatedMessages),
                         system: systemPrompt,
-                        tools: {
-                            dad_joke: dadJokeTool,
-                            generate_image: {
-                                description: 'Generate an image from a text prompt. Use this when user asks to create, generate, or make an image.',
-                                inputSchema: z.object({
-                                    prompt: z.string().describe('The prompt to generate the image'),
-                                }),
-                            },
-                        },
+                        tools,
                     });
 
-                    writer.merge(result.toUIMessageStream({ originalMessages: messages }));
+                    writer.merge(result.toUIMessageStream({ originalMessages: validatedMessages }));
+                },
+                onFinish: async ({ messages: finalMessages }) => {
+                    if (chatId) {
+                        console.log('💾 Saving messages. Count:', finalMessages.length);
+                        await saveChat({ chatId, messages: finalMessages });
+                    }
                 },
             });
 
@@ -118,20 +167,21 @@ export async function POST(req: Request) {
             // Normal flow for all other cases
             const result = streamText({
                 model: openai('gpt-4o'),
-                messages: convertToModelMessages(messages),
+                messages: convertToModelMessages(validatedMessages),
                 system: systemPrompt,
-                tools: {
-                    dad_joke: dadJokeTool,
-                    generate_image: {
-                        description: 'Generate an image from a text prompt. Use this when user asks to create, generate, or make an image.',
-                        inputSchema: z.object({
-                            prompt: z.string().describe('The prompt to generate the image'),
-                        }),
-                    },
-                },
+                tools,
             });
 
-            return result.toUIMessageStreamResponse();
+            return result.toUIMessageStreamResponse({
+                originalMessages: validatedMessages,
+                generateMessageId: messageIdGenerator,
+                onFinish: async ({ messages: finalMessages }) => {
+                    if (chatId) {
+                        console.log('💾 Saving messages. Count:', finalMessages.length);
+                        await saveChat({ chatId, messages: finalMessages });
+                    }
+                },
+            });
         }
     } catch (error) {
         console.error('=== API ERROR ===');
