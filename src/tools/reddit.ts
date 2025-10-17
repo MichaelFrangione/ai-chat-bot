@@ -175,3 +175,16 @@ export const reddit: ToolFn<Args, string> = async ({ toolArgs, personality }: { 
         return JSON.stringify(errorOutput);
     }
 };
+
+// AI SDK tool - proper format with inputSchema
+export const redditTool = {
+    description: "Fetch actual posts from Reddit. Use this tool whenever the user asks for Reddit posts, content, or links - even for single posts. Always use this tool for Reddit-related requests.",
+    inputSchema: z.object({
+        limit: z.number().nullable().describe("Number of posts to return. Use 1 for single post requests, higher numbers for multiple posts (max: 25). Use null for default (5)."),
+        subreddit: z.string().nullable().describe("Specific subreddit to search (e.g., 'funny', 'news'). Use null for r/all.")
+    }),
+    execute: async ({ limit, subreddit }: { limit: number | null; subreddit: string | null }, { metadata }: any) => {
+        const personality = metadata?.personality as PersonalityKey | undefined;
+        return await reddit({ toolArgs: { limit, subreddit }, userMessage: '', personality });
+    }
+};

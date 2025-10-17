@@ -160,3 +160,17 @@ function chunkText(text: string, wordsPerChunk: number = 600): string[] {
 
     return chunks;
 }
+
+// AI SDK tool - proper format with inputSchema
+export const websiteScraperTool = {
+    description: "Answer questions about articles or web pages by analyzing their text content. Use this tool for news articles, blog posts, and regular web pages. DO NOT use this for YouTube URLs.",
+    inputSchema: z.object({
+        url: z.string().describe("The URL of the article/website to analyze (NOT YouTube URLs)."),
+        question: z.string().describe("The user's question or request about the article"),
+    }),
+    execute: async ({ url, question }: { url: string; question: string; }, { metadata }: any) => {
+        const personality = metadata?.personality as PersonalityKey | undefined;
+        const userMessage = metadata?.userMessage as string;
+        return await websiteScraper({ toolArgs: { url, question }, userMessage, personality });
+    }
+};

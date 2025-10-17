@@ -1,23 +1,11 @@
 'use client';
 
-import ChatInterface from '@/components/ChatInterface';
+import ChatInterfaceNew from '@/components/ChatInterfaceNew';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Home() {
     const { currentTheme } = useTheme();
-
-    const getThemeClasses = () => {
-        return {
-            background: currentTheme.colors.background,
-            text: `text-${currentTheme.colors.text}`,
-            surface: `bg-${currentTheme.colors.surface}`,
-            border: `border-${currentTheme.colors.border}`,
-            gradient: `linear-gradient(to right, ${currentTheme.colors.gradient.from}, ${currentTheme.colors.gradient.to})`,
-        };
-    };
-
-    const themeClasses = getThemeClasses();
 
     return (
         <div
@@ -31,7 +19,7 @@ export default function Home() {
                             className="text-3xl font-bold"
                             style={{ color: currentTheme.colors.text }}
                         >
-                            EchoBot
+                            EchoBot (AI SDK)
                         </h1>
                         <div className="flex items-center gap-3">
                             <span
@@ -43,7 +31,7 @@ export default function Home() {
                             <ThemeSwitcher />
                         </div>
                     </div>
-                    <ChatInterface themeClasses={themeClasses} />
+                    <ChatInterfaceNew />
                 </div>
             </div>
 

@@ -174,3 +174,17 @@ function formatTimestamp(seconds: number): string {
     const secs = Math.floor(seconds % 60);
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
 }
+
+// AI SDK tool - proper format with inputSchema
+export const youtubeTranscriberTool = {
+    description: "Answer questions about a YouTube video by analyzing its transcript. Use this tool when users ask questions about YouTube videos, request summaries, or want to find specific information within a video.",
+    inputSchema: z.object({
+        videoUrl: z.string().describe("The URL of the YouTube video to analyze."),
+        question: z.string().describe("The user's question or request about the video (e.g., 'what are the main points?', 'summarize this video')"),
+    }),
+    execute: async ({ videoUrl, question }: { videoUrl: string; question: string; }, { metadata }: any) => {
+        const personality = metadata?.personality as PersonalityKey | undefined;
+        const userMessage = metadata?.userMessage as string;
+        return await youtubeTranscriber({ toolArgs: { videoUrl, question }, userMessage, personality });
+    }
+};

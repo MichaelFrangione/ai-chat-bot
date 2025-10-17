@@ -38,6 +38,7 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
     };
 
     useEffect(() => {
+        // Scroll to bottom of the messages list when a new message is added or the page is loaded
         scrollToBottom();
     }, [messages]);
 

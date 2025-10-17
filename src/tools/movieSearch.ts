@@ -55,7 +55,7 @@ export const movieSearch: ToolFn<Args, string> = async ({ toolArgs, userMessage,
         results = await queryMovies({
             query: toolArgs.query,
             filters,
-            topK: Math.max(actualLimit, 3) // Get at least 3 results for analysis even if we only want 1
+            topK: Math.max(actualLimit, 3)
         });
     } catch (e) {
         console.error('Movie search error:', e);
@@ -237,3 +237,20 @@ Make it sound like you actually analyzed all the options and picked the best one
         return "";
     }
 }
+
+// AI SDK tool - proper format with inputSchema
+export const movieSearchTool = {
+    description: `ALWAYS use this tool when users ask about movies, want movie recommendations, suggestions, or ask to find specific movies. This tool searches a database of movies with metadata including title, year, genre, director, actors, rating, votes, revenue, metascore, and descriptions.`,
+    inputSchema: z.object({
+        query: z.string().describe("Search query for movies. Use specific terms like 'alien invasion', 'space exploration', 'action thriller', etc."),
+        genre: z.string().nullable().describe('Filter movies by genre. Only use when user specifically mentions a genre by name.'),
+        director: z.string().nullable().describe('Filter movies by director name. Only use when user specifically mentions a director.'),
+        year: z.number().nullable().describe('Filter movies by year. Only use when user mentions a specific year.'),
+        limit: z.number().nullable().describe('Number of movies to return. Use 1 for single recommendations.'),
+    }),
+    execute: async ({ query, genre, director, year, limit }: { query: string; genre: string | null; director: string | null; year: number | null; limit: number | null; }, { metadata }: any) => {
+        const personality = metadata?.personality as PersonalityKey | undefined;
+        const userMessage = metadata?.userMessage as string;
+        return await movieSearch({ toolArgs: { query, genre, director, year, limit }, userMessage, personality });
+    }
+};
