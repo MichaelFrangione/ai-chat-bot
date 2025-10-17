@@ -1,9 +1,11 @@
 'use client';
 
+// @ts-ignore - Package is installed, just TS resolution issue
 import { useChat } from '@ai-sdk/react';
 import {
     DefaultChatTransport,
     lastAssistantMessageIsCompleteWithToolCalls,
+    createIdGenerator,
 } from 'ai';
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -11,16 +13,41 @@ import { usePersonality } from '@/contexts/PersonalityContext';
 import { PERSONALITIES, PersonalityKey } from '@/constants/personalities';
 import ImageGenerationApproval from './ImageGenerationApproval';
 
-export default function ChatInterfaceNew() {
+interface ChatInterfaceNewProps {
+    chatId: string;
+    initialMessages: any[];
+    onNewChat: () => void;
+}
+
+export default function ChatInterfaceNew({ chatId, initialMessages, onNewChat }: ChatInterfaceNewProps) {
     const { currentTheme } = useTheme();
     const { personality, setPersonality } = usePersonality();
     const [input, setInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const { messages, sendMessage, addToolResult, error } = useChat({
+        id: chatId,
+        messages: initialMessages,
         api: '/api/chat',
         sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
-        onError: (error) => {
+        // Generate client-side IDs with prefix
+        generateId: createIdGenerator({
+            prefix: 'msgc',
+            size: 16,
+        }),
+        transport: new DefaultChatTransport({
+            api: '/api/chat',
+            // Only send the last message to reduce bandwidth
+            prepareSendMessagesRequest({ messages, id }) {
+                return {
+                    body: {
+                        message: messages[messages.length - 1],
+                        id
+                    }
+                };
+            },
+        }),
+        onError: (error: Error) => {
             console.error('Chat error:', error);
         },
     });
@@ -47,9 +74,21 @@ export default function ChatInterfaceNew() {
                 }}
             >
                 <div className="flex items-center justify-between gap-4">
-                    <h2 className="text-lg font-semibold" style={{ color: currentTheme.colors.headerText }}>
-                        AI Chat with Streaming
-                    </h2>
+                    <div className="flex items-center gap-3">
+                        <h2 className="text-lg font-semibold" style={{ color: currentTheme.colors.headerText }}>
+                            AI Chat with Streaming
+                        </h2>
+                        <button
+                            onClick={onNewChat}
+                            className="text-xs px-3 py-1 rounded-md hover:opacity-80 transition-opacity"
+                            style={{
+                                backgroundColor: currentTheme.colors.componentColor,
+                                color: currentTheme.colors.text,
+                            }}
+                        >
+                            + New Chat
+                        </button>
+                    </div>
                     <div className="flex items-center gap-2">
                         <label
                             className="text-sm font-medium"

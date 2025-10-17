@@ -1,6 +1,6 @@
 'use client';
 
-import ChatInterfaceNew from '@/components/ChatInterfaceNew';
+import ChatLoader from '@/components/ChatLoader';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -31,7 +31,7 @@ export default function Home() {
                             <ThemeSwitcher />
                         </div>
                     </div>
-                    <ChatInterfaceNew />
+                    <ChatLoader />
                 </div>
             </div>
 
