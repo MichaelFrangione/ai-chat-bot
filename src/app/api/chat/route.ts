@@ -1,41 +1,149 @@
 import { openai } from '@ai-sdk/openai';
-import { streamText, convertToModelMessages, UIMessage } from 'ai';
+import {
+    streamText,
+    convertToModelMessages,
+    UIMessage,
+    createUIMessageStream,
+    createUIMessageStreamResponse,
+    isToolUIPart
+} from 'ai';
 import { dadJokeTool } from '@/tools/dadJoke';
+import { generateImage } from '@/tools/generateImage';
 import { getPersonalityDirectives, PersonalityKey } from '@/constants/personalities';
+import { z } from 'zod';
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-    const body = await req.json();
-    const { messages } = body as { messages: UIMessage[]; };
+    try {
+        const body = await req.json();
+        const { messages } = body as { messages: UIMessage[]; };
 
-    // Read personality from cookie (simple, reliable, server-side) 
-    // workaround: https://github.com/vercel/ai/issues/7109#issuecomment-3168842681
-    const cookieHeader = req.headers.get('cookie') || '';
-    const personalityCookie = cookieHeader
-        .split(';')
-        .find(c => c.trim().startsWith('personality='))
-        ?.split('=')[1]
-        ?.trim();
+        // Read personality from cookie (simple, reliable, server-side) 
+        const cookieHeader = req.headers.get('cookie') || '';
+        const personalityCookie = cookieHeader
+            .split(';')
+            .find(c => c.trim().startsWith('personality='))
+            ?.split('=')[1]
+            ?.trim();
 
-    const personality = (personalityCookie as PersonalityKey) || 'assistant';
+        const personality = (personalityCookie as PersonalityKey) || 'assistant';
 
-    console.log('=== CHAT REQUEST ===');
-    console.log('Cookie header:', cookieHeader);
-    console.log('Personality from cookie:', personality);
-    console.log('Messages count:', messages.length);
+        console.log('=== CHAT REQUEST ===');
+        console.log('Cookie header:', cookieHeader);
+        console.log('Personality from cookie:', personality);
+        console.log('Messages count:', messages.length);
 
-    const systemPrompt = getPersonalityDirectives(personality);
-    console.log('System prompt (first 200 chars):', systemPrompt.substring(0, 200));
+        const systemPrompt = getPersonalityDirectives(personality);
+        console.log('System prompt (first 200 chars):', systemPrompt.substring(0, 200));
 
-    const result = streamText({
-        model: openai('gpt-5-nano'),
-        messages: convertToModelMessages(messages),
-        system: systemPrompt,
-        tools: {
-            dad_joke: dadJokeTool,
-        },
-    });
+        // Check if we need to handle image generation approval
+        const lastMessage = messages[messages.length - 1];
+        let needsImageProcessing = false;
 
-    return result.toUIMessageStreamResponse();
+        if (lastMessage && lastMessage.parts) {
+            for (const part of lastMessage.parts) {
+                if (isToolUIPart(part) && part.type === 'tool-generate_image' && part.state === 'output-available' && part.output === 'APPROVED') {
+                    needsImageProcessing = true;
+                    break;
+                }
+            }
+        }
+
+        if (needsImageProcessing) {
+            // Use createUIMessageStream to handle image generation
+            const stream = createUIMessageStream({
+                originalMessages: messages,
+                execute: async ({ writer }) => {
+                    // Process image generation
+                    for (const part of lastMessage.parts) {
+                        if (isToolUIPart(part) && part.type === 'tool-generate_image' && part.state === 'output-available' && part.output === 'APPROVED') {
+                            console.log('✅ Fresh approval - generating image with your existing tool');
+
+                            try {
+                                const promptValue = (part as any).input.prompt;
+                                const result = await generateImage({
+                                    toolArgs: { prompt: promptValue },
+                                    userMessage: promptValue,
+                                    personality
+                                });
+
+                                console.log('🎨 Image generation result:', result.substring(0, 100));
+
+                                // Parse the structured response to get the image URL
+                                const parsed = JSON.parse(result);
+                                const imageUrl = parsed.data?.url;
+
+                                if (imageUrl) {
+                                    // Update the tool result with real image URL
+                                    writer.write({
+                                        type: 'tool-output-available',
+                                        toolCallId: part.toolCallId,
+                                        output: imageUrl,
+                                    });
+                                }
+                            } catch (error) {
+                                console.error('❌ Image generation error:', error);
+                                writer.write({
+                                    type: 'tool-output-error',
+                                    toolCallId: part.toolCallId,
+                                    errorText: 'Failed to generate image',
+                                });
+                            }
+                        }
+                    }
+
+                    // Continue with normal LLM generation
+                    const result = streamText({
+                        model: openai('gpt-4o'),
+                        messages: convertToModelMessages(messages),
+                        system: systemPrompt,
+                        tools: {
+                            dad_joke: dadJokeTool,
+                            generate_image: {
+                                description: 'Generate an image from a text prompt. Use this when user asks to create, generate, or make an image.',
+                                inputSchema: z.object({
+                                    prompt: z.string().describe('The prompt to generate the image'),
+                                }),
+                            },
+                        },
+                    });
+
+                    writer.merge(result.toUIMessageStream({ originalMessages: messages }));
+                },
+            });
+
+            return createUIMessageStreamResponse({ stream });
+        } else {
+            // Normal flow for all other cases
+            const result = streamText({
+                model: openai('gpt-4o'),
+                messages: convertToModelMessages(messages),
+                system: systemPrompt,
+                tools: {
+                    dad_joke: dadJokeTool,
+                    generate_image: {
+                        description: 'Generate an image from a text prompt. Use this when user asks to create, generate, or make an image.',
+                        inputSchema: z.object({
+                            prompt: z.string().describe('The prompt to generate the image'),
+                        }),
+                    },
+                },
+            });
+
+            return result.toUIMessageStreamResponse();
+        }
+    } catch (error) {
+        console.error('=== API ERROR ===');
+        console.error('Error:', error);
+
+        // Return a proper error response that the frontend can handle
+        return new Response(JSON.stringify({
+            error: 'Failed to process request',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
 }

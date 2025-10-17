@@ -9,6 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { usePersonality } from '@/contexts/PersonalityContext';
 import { PERSONALITIES, PersonalityKey } from '@/constants/personalities';
+import ImageGenerationApproval from './ImageGenerationApproval';
 
 export default function ChatInterfaceNew() {
     const { currentTheme } = useTheme();
@@ -16,9 +17,12 @@ export default function ChatInterfaceNew() {
     const [input, setInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const { messages, sendMessage, addToolResult } = useChat({
+    const { messages, sendMessage, addToolResult, error } = useChat({
         api: '/api/chat',
         sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+        onError: (error) => {
+            console.error('Chat error:', error);
+        },
     });
 
     // Auto-scroll to bottom when messages change
@@ -78,7 +82,17 @@ export default function ChatInterfaceNew() {
                     backgroundColor: currentTheme.colors.background,
                 }}
             >
-                {messages.length === 0 && (
+                {error && (
+                    <div className="text-center py-4 px-4 mx-4 mb-4 rounded-lg border" style={{
+                        backgroundColor: '#fef2f2',
+                        borderColor: '#fecaca',
+                        color: '#dc2626'
+                    }}>
+                        <p className="font-medium">Error: {error.message}</p>
+                    </div>
+                )}
+
+                {messages.length === 0 && !error && (
                     <div className="text-center py-12" style={{ color: currentTheme.colors.text }}>
                         <p>Ask me for a dad joke!</p>
                     </div>
@@ -127,6 +141,63 @@ export default function ChatInterfaceNew() {
                                                     case 'output-available':
                                                         // Let fallback loading text handle all these states
                                                         return null;
+                                                    case 'output-error':
+                                                        return (
+                                                            <div key={index} className="text-red-500">
+                                                                Error: {part.errorText}
+                                                            </div>
+                                                        );
+                                                }
+                                                break;
+
+                                            case 'tool-generate_image':
+                                                const callId = part.toolCallId;
+
+                                                switch (part.state) {
+                                                    case 'input-streaming':
+                                                        return (
+                                                            <div key={index} className="text-xs opacity-75 italic">
+                                                                Preparing image request...
+                                                            </div>
+                                                        );
+                                                    case 'input-available':
+                                                        // Show approval UI
+                                                        return (
+                                                            <ImageGenerationApproval
+                                                                key={index}
+                                                                prompt={part.input.prompt}
+                                                                onApprove={() => {
+                                                                    console.log('✅ User approved image generation');
+                                                                    addToolResult({
+                                                                        tool: 'generate_image',
+                                                                        toolCallId: callId,
+                                                                        output: 'APPROVED'
+                                                                    });
+                                                                }}
+                                                                onDeny={() => {
+                                                                    console.log('❌ User denied image generation');
+                                                                    addToolResult({
+                                                                        tool: 'generate_image',
+                                                                        toolCallId: callId,
+                                                                        output: 'DENIED'
+                                                                    });
+                                                                }}
+                                                            />
+                                                        );
+                                                    case 'output-available':
+                                                        // Show the generated image or approval result
+                                                        return (
+                                                            <div key={index}>
+                                                                {part.output === 'APPROVED' || part.output === 'DENIED' ? (
+                                                                    <div className="text-xs opacity-75 italic">
+                                                                        {part.output === 'APPROVED' ? '✅ Generating image...' : '❌ Image generation cancelled'}
+                                                                    </div>
+                                                                ) : (
+                                                                    // Real image URL will be here after execution
+                                                                    <img src={part.output as string} alt="Generated" className="rounded-lg max-w-full" />
+                                                                )}
+                                                            </div>
+                                                        );
                                                     case 'output-error':
                                                         return (
                                                             <div key={index} className="text-red-500">
