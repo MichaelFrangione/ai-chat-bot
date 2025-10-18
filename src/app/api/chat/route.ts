@@ -10,27 +10,21 @@ import {
     createIdGenerator
 } from 'ai';
 import { dadJokeTool } from '@/tools/dadJoke';
-import { generateImage } from '@/tools/generateImage';
+import { generateImage, generateImageValidationTool } from '@/tools/generateImage';
 import { getPersonalityDirectives, PersonalityKey } from '@/constants/personalities';
 import { loadChat, saveChat, getChatSummary } from '@/util/chat-store';
 import {
     shouldSummarize,
     splitMessagesForSummarization,
     summarizeConversation
-} from '../../../../src/util/summarization';
-import { z } from 'zod';
+} from '@/util/summarization';
 
 export const maxDuration = 30;
 
 // Define tools for validation
 const tools = {
     dad_joke: dadJokeTool,
-    generate_image: {
-        description: 'Generate an image from a text prompt. Use this when user asks to create, generate, or make an image.',
-        inputSchema: z.object({
-            prompt: z.string().describe('The prompt to generate the image'),
-        }),
-    },
+    generate_image: generateImageValidationTool,
 };
 
 export async function POST(req: Request) {

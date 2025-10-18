@@ -13,6 +13,14 @@ export const generateImageToolDefinition = {
                 `,
 };
 
+// AI SDK tool - For validation only (execution handled manually in route)
+export const generateImageValidationTool = {
+    description: 'Generate an image from a text prompt. Use this when user asks to create, generate, or make an image.',
+    inputSchema: z.object({
+        prompt: z.string().describe('The prompt to use to generate an image or take a photo'),
+    }),
+};
+
 type Args = z.infer<typeof generateImageToolDefinition.parameters>;
 
 export const generateImage: ToolFn<Args, string> = async ({ toolArgs, userMessage, personality }: { toolArgs: Args; userMessage: string; personality?: PersonalityKey; }) => {
