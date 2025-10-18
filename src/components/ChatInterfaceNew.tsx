@@ -1,6 +1,5 @@
 'use client';
 
-// @ts-ignore - Package is installed, just TS resolution issue
 import { useChat } from '@ai-sdk/react';
 import {
     DefaultChatTransport,
