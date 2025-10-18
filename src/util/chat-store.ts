@@ -11,6 +11,7 @@ interface ChatStore {
         [chatId: string]: {
             id: string;
             messages: UIMessage[];
+            summary: string;
             createdAt: string;
             updatedAt: string;
         };
@@ -51,6 +52,7 @@ export async function createChat(): Promise<string> {
     store.chats[chatId] = {
         id: chatId,
         messages: [],
+        summary: '',
         createdAt: now,
         updatedAt: now,
     };
@@ -70,8 +72,12 @@ export async function loadChat(chatId: string): Promise<UIMessage[]> {
     return chat.messages;
 }
 
-export async function saveChat(params: { chatId: string; messages: UIMessage[]; }): Promise<void> {
-    const { chatId, messages } = params;
+export async function saveChat(params: {
+    chatId: string;
+    messages: UIMessage[];
+    summary?: string;
+}): Promise<void> {
+    const { chatId, messages, summary } = params;
     const store = await readStore();
 
     if (!store.chats[chatId]) {
@@ -79,14 +85,24 @@ export async function saveChat(params: { chatId: string; messages: UIMessage[]; 
         store.chats[chatId] = {
             id: chatId,
             messages: [],
+            summary: '',
             createdAt: now,
             updatedAt: now,
         };
     }
 
     store.chats[chatId].messages = messages;
+    if (summary !== undefined) {
+        store.chats[chatId].summary = summary;
+    }
     store.chats[chatId].updatedAt = new Date().toISOString();
 
     await writeStore(store);
+}
+
+export async function getChatSummary(chatId: string): Promise<string> {
+    const store = await readStore();
+    const chat = store.chats[chatId];
+    return chat?.summary || '';
 }
 

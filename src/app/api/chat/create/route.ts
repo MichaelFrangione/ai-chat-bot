@@ -1,4 +1,4 @@
-import { createChat } from '@/util/simple-chat-store';
+import { createChat } from '@/util/chat-store';
 
 export async function POST() {
     try {

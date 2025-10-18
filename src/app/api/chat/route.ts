@@ -12,7 +12,12 @@ import {
 import { dadJokeTool } from '@/tools/dadJoke';
 import { generateImage } from '@/tools/generateImage';
 import { getPersonalityDirectives, PersonalityKey } from '@/constants/personalities';
-import { loadChat, saveChat } from '@/util/simple-chat-store';
+import { loadChat, saveChat, getChatSummary } from '@/util/chat-store';
+import {
+    shouldSummarize,
+    splitMessagesForSummarization,
+    summarizeConversation
+} from '../../../../src/util/summarization';
 import { z } from 'zod';
 
 export const maxDuration = 30;
@@ -73,12 +78,43 @@ export async function POST(req: Request) {
         console.log('Personality from cookie:', personality);
         console.log('Messages count:', messages.length);
 
-        const systemPrompt = getPersonalityDirectives(personality);
+        // Check if we need to summarize
+        let summary = '';
+        let messagesToProcess = messages;
+
+        if (chatId && shouldSummarize(messages.length)) {
+            console.log('📊 Triggering summarization...');
+
+            // Get previous summary
+            const previousSummary = await getChatSummary(chatId);
+
+            // Split messages
+            const { toSummarize, toKeep } = splitMessagesForSummarization(messages);
+
+            console.log(`📦 Summarizing ${toSummarize.length} messages, keeping ${toKeep.length} recent`);
+
+            // Generate new summary
+            summary = await summarizeConversation(toSummarize, previousSummary);
+            console.log(`✅ Summary generated: ${summary.substring(0, 100)}...`);
+
+            // Use trimmed messages for processing
+            messagesToProcess = toKeep;
+        } else if (chatId) {
+            // Load existing summary
+            summary = await getChatSummary(chatId);
+        }
+
+        // Build system prompt with summary if available
+        let systemPrompt = getPersonalityDirectives(personality);
+        if (summary && summary.length > 0) {
+            systemPrompt = `Previous conversation summary: ${summary}\n\n${systemPrompt}`;
+        }
+
         console.log('System prompt (first 200 chars):', systemPrompt.substring(0, 200));
 
-        // Validate messages if they contain tools
+        // Validate messages if they contain tools (use trimmed messages if summarized)
         const validatedMessages = await validateUIMessages({
-            messages,
+            messages: messagesToProcess,
             tools: tools as any,
         });
 
@@ -157,7 +193,12 @@ export async function POST(req: Request) {
                 onFinish: async ({ messages: finalMessages }) => {
                     if (chatId) {
                         console.log('💾 Saving messages. Count:', finalMessages.length);
-                        await saveChat({ chatId, messages: finalMessages });
+                        // Save with summary if we generated one
+                        await saveChat({
+                            chatId,
+                            messages: finalMessages,
+                            summary: summary || undefined
+                        });
                     }
                 },
             });
@@ -178,7 +219,12 @@ export async function POST(req: Request) {
                 onFinish: async ({ messages: finalMessages }) => {
                     if (chatId) {
                         console.log('💾 Saving messages. Count:', finalMessages.length);
-                        await saveChat({ chatId, messages: finalMessages });
+                        // Save with summary if we generated one
+                        await saveChat({
+                            chatId,
+                            messages: finalMessages,
+                            summary: summary || undefined
+                        });
                     }
                 },
             });
