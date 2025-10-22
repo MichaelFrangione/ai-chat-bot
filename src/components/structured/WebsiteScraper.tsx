@@ -1,13 +1,13 @@
 'use client';
 
-import { YoutubeTranscriberOutput } from '@/types/structured';
+import { WebsiteScraperOutput } from '@/types/structured';
 import { useTheme } from '@/contexts/ThemeContext';
 
-interface YoutubeTranscriptProps {
-    output: YoutubeTranscriberOutput;
+interface WebsiteScraperProps {
+    output: WebsiteScraperOutput;
 }
 
-export default function YoutubeTranscript({ output }: YoutubeTranscriptProps) {
+export default function WebsiteScraper({ output }: WebsiteScraperProps) {
     const { currentTheme } = useTheme();
 
     return (
@@ -48,24 +48,21 @@ export default function YoutubeTranscript({ output }: YoutubeTranscriptProps) {
                 )}
             </div>
 
-            {/* Video Link */}
-            {output.data.relevant.length > 0 && (
-                <div className="mb-4">
-                    <a
-                        href={output.data.relevant[0].metadata.source}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm transition-colors hover:underline"
-                        style={{ color: currentTheme.colors.accent }}
-                    >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-                        </svg>
-                        Watch on YouTube
-                    </a>
-                </div>
-            )}
+            {/* Source URL */}
+            <div className="mb-4">
+                <a
+                    href={output.data.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm transition-colors hover:underline"
+                    style={{ color: currentTheme.colors.accent }}
+                >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                    </svg>
+                    {output.data.url}
+                </a>
+            </div>
         </div>
     );
 }
-

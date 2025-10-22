@@ -98,7 +98,24 @@ Please answer the question based on these transcript sections.`
             console.log(`🎭 Generated with ${personality} personality integrated`);
         }
 
-        return answer;
+        // Return structured output instead of plain text
+        const structuredOutput = {
+            type: 'youtube_transcriber' as const,
+            data: {
+                relevant: relevant.map((chunk: any) => ({
+                    text: chunk.text,
+                    score: chunk.score,
+                    metadata: chunk.metadata
+                }))
+            },
+            metadata: {
+                title: `Analysis of ${relevant[0]?.metadata?.title || 'YouTube Video'}`,
+                description: `Found ${relevant.length} relevant transcript sections`
+            },
+            contextualMessage: answer
+        };
+
+        return JSON.stringify(structuredOutput);
     } catch (error) {
         console.error('❌ Error in youtubeTranscriber:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

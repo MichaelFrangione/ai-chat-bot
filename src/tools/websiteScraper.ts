@@ -94,7 +94,26 @@ Please answer the question based on these article sections.`
             console.log(`🎭 Generated with ${personality} personality integrated`);
         }
 
-        return answer;
+        // Return structured output instead of plain text
+        const structuredOutput = {
+            type: 'website_scraper' as const,
+            data: {
+                relevant: relevant.map((chunk: any) => ({
+                    text: chunk.text,
+                    score: chunk.score,
+                    metadata: chunk.metadata
+                })),
+                url,
+                question
+            },
+            metadata: {
+                title: `Analysis of ${article.title}`,
+                description: `Found ${relevant.length} relevant sections from the article`
+            },
+            contextualMessage: answer
+        };
+
+        return JSON.stringify(structuredOutput);
     } catch (error) {
         console.error('❌ Error in websiteScraper:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

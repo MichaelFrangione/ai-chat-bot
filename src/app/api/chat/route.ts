@@ -12,6 +12,9 @@ import {
 import { dadJokeTool } from '@/tools/dadJoke';
 import { generateImage, generateImageValidationTool } from '@/tools/generateImage';
 import { movieSearchTool } from '@/tools/movieSearch';
+import { redditTool } from '@/tools/reddit';
+import { websiteScraperTool } from '@/tools/websiteScraper';
+import { youtubeTranscriberTool } from '@/tools/youtubeTranscriber';
 import { getPersonalityDirectives, PersonalityKey } from '@/constants/personalities';
 import { loadChat, saveChat, getChatSummary } from '@/util/chat-store';
 import {
@@ -27,6 +30,9 @@ const tools = {
     dad_joke: dadJokeTool,
     generate_image: generateImageValidationTool,
     movie_search: movieSearchTool,
+    reddit: redditTool,
+    websiteScraper: websiteScraperTool,
+    youtubeTranscriber: youtubeTranscriberTool,
 };
 
 export async function POST(req: Request) {

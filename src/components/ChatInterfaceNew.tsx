@@ -168,16 +168,28 @@ export default function ChatInterfaceNew({ chatId, initialMessages, onNewChat }:
                             {/* Render message parts */}
                             <div className="text-sm leading-relaxed whitespace-pre-wrap">
                                 {(() => {
-                                    // Check if this message has a movie search tool result - if so, suppress text content AFTER the tool
+                                    // Check if this message has a structured tool result - if so, suppress text content AFTER the tool
                                     const movieSearchPartIndex = message.parts.findIndex((part: any) =>
                                         part.type === 'tool-movie_search' && part.state === 'output-available'
+                                    );
+                                    const redditPartIndex = message.parts.findIndex((part: any) =>
+                                        part.type === 'tool-reddit' && part.state === 'output-available'
+                                    );
+                                    const youtubePartIndex = message.parts.findIndex((part: any) =>
+                                        part.type === 'tool-youtubeTranscriber' && part.state === 'output-available'
+                                    );
+                                    const websitePartIndex = message.parts.findIndex((part: any) =>
+                                        part.type === 'tool-websiteScraper' && part.state === 'output-available'
                                     );
 
                                     const renderedParts = message.parts.map((part: any, index: number) => {
                                         switch (part.type) {
                                             case 'text':
-                                                // Suppress text content if it comes AFTER a movie search tool result
-                                                if (movieSearchPartIndex !== -1 && index > movieSearchPartIndex) {
+                                                // Suppress text content if it comes AFTER any structured tool result
+                                                if ((movieSearchPartIndex !== -1 && index > movieSearchPartIndex) ||
+                                                    (redditPartIndex !== -1 && index > redditPartIndex) ||
+                                                    (youtubePartIndex !== -1 && index > youtubePartIndex) ||
+                                                    (websitePartIndex !== -1 && index > websitePartIndex)) {
                                                     return null;
                                                 }
                                                 return part.text ? <span key={index}>{part.text}</span> : null;
@@ -214,6 +226,108 @@ export default function ChatInterfaceNew({ chatId, initialMessages, onNewChat }:
                                                             return (
                                                                 <div key={index}>
                                                                     <StructuredOutputComponent output={structuredOutput} />
+                                                                </div>
+                                                            );
+                                                        }
+                                                        // Fallback to plain text if parsing fails
+                                                        return (
+                                                            <div key={index} className="text-sm">
+                                                                {part.output}
+                                                            </div>
+                                                        );
+                                                    case 'output-error':
+                                                        return (
+                                                            <div key={index} className="text-red-500">
+                                                                Error: {part.errorText}
+                                                            </div>
+                                                        );
+                                                }
+                                                break;
+
+                                            case 'tool-reddit':
+                                                switch (part.state) {
+                                                    case 'input-streaming':
+                                                    case 'input-available':
+                                                        return (
+                                                            <div key={index} className="text-xs opacity-75 italic">
+                                                                Fetching Reddit posts...
+                                                            </div>
+                                                        );
+                                                    case 'output-available':
+                                                        // Parse the structured response and render it
+                                                        const redditOutput = parseToolResponse('reddit', part.output as string);
+                                                        if (redditOutput) {
+                                                            return (
+                                                                <div key={index}>
+                                                                    <StructuredOutputComponent output={redditOutput} />
+                                                                </div>
+                                                            );
+                                                        }
+                                                        // Fallback to plain text if parsing fails
+                                                        return (
+                                                            <div key={index} className="text-sm">
+                                                                {part.output}
+                                                            </div>
+                                                        );
+                                                    case 'output-error':
+                                                        return (
+                                                            <div key={index} className="text-red-500">
+                                                                Error: {part.errorText}
+                                                            </div>
+                                                        );
+                                                }
+                                                break;
+
+                                            case 'tool-youtubeTranscriber':
+                                                switch (part.state) {
+                                                    case 'input-streaming':
+                                                    case 'input-available':
+                                                        return (
+                                                            <div key={index} className="text-xs opacity-75 italic">
+                                                                Analyzing YouTube video transcript...
+                                                            </div>
+                                                        );
+                                                    case 'output-available':
+                                                        // Parse the structured response and render it
+                                                        const youtubeOutput = parseToolResponse('youtubeTranscriber', part.output as string);
+                                                        if (youtubeOutput) {
+                                                            return (
+                                                                <div key={index}>
+                                                                    <StructuredOutputComponent output={youtubeOutput} />
+                                                                </div>
+                                                            );
+                                                        }
+                                                        // Fallback to plain text if parsing fails
+                                                        return (
+                                                            <div key={index} className="text-sm">
+                                                                {part.output}
+                                                            </div>
+                                                        );
+                                                    case 'output-error':
+                                                        return (
+                                                            <div key={index} className="text-red-500">
+                                                                Error: {part.errorText}
+                                                            </div>
+                                                        );
+                                                }
+                                                break;
+
+                                            case 'tool-websiteScraper':
+                                                switch (part.state) {
+                                                    case 'input-streaming':
+                                                    case 'input-available':
+                                                        return (
+                                                            <div key={index} className="text-xs opacity-75 italic">
+                                                                Analyzing website content...
+                                                            </div>
+                                                        );
+                                                    case 'output-available':
+                                                        // Parse the structured response and render it
+                                                        const websiteOutput = parseToolResponse('websiteScraper', part.output as string);
+                                                        if (websiteOutput) {
+                                                            return (
+                                                                <div key={index}>
+                                                                    <StructuredOutputComponent output={websiteOutput} />
                                                                 </div>
                                                             );
                                                         }
