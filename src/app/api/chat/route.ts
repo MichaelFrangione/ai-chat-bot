@@ -11,6 +11,7 @@ import {
 } from 'ai';
 import { dadJokeTool } from '@/tools/dadJoke';
 import { generateImage, generateImageValidationTool } from '@/tools/generateImage';
+import { movieSearchTool } from '@/tools/movieSearch';
 import { getPersonalityDirectives, PersonalityKey } from '@/constants/personalities';
 import { loadChat, saveChat, getChatSummary } from '@/util/chat-store';
 import {
@@ -25,6 +26,7 @@ export const maxDuration = 30;
 const tools = {
     dad_joke: dadJokeTool,
     generate_image: generateImageValidationTool,
+    movie_search: movieSearchTool,
 };
 
 export async function POST(req: Request) {

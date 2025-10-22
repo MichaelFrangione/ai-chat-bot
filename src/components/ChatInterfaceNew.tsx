@@ -11,6 +11,8 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { usePersonality } from '@/contexts/PersonalityContext';
 import { PERSONALITIES, PersonalityKey } from '@/constants/personalities';
 import ImageGenerationApproval from './ImageGenerationApproval';
+import StructuredOutputComponent from './StructuredOutput';
+import { parseToolResponse } from '@/lib/structured-parser';
 
 interface ChatInterfaceNewProps {
     chatId: string;
@@ -27,7 +29,6 @@ export default function ChatInterfaceNew({ chatId, initialMessages, onNewChat }:
     const { messages, sendMessage, addToolResult, error } = useChat({
         id: chatId,
         messages: initialMessages,
-        api: '/api/chat',
         sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
         // Generate client-side IDs with prefix
         generateId: createIdGenerator({
@@ -167,9 +168,18 @@ export default function ChatInterfaceNew({ chatId, initialMessages, onNewChat }:
                             {/* Render message parts */}
                             <div className="text-sm leading-relaxed whitespace-pre-wrap">
                                 {(() => {
+                                    // Check if this message has a movie search tool result - if so, suppress text content AFTER the tool
+                                    const movieSearchPartIndex = message.parts.findIndex((part: any) =>
+                                        part.type === 'tool-movie_search' && part.state === 'output-available'
+                                    );
+
                                     const renderedParts = message.parts.map((part: any, index: number) => {
                                         switch (part.type) {
                                             case 'text':
+                                                // Suppress text content if it comes AFTER a movie search tool result
+                                                if (movieSearchPartIndex !== -1 && index > movieSearchPartIndex) {
+                                                    return null;
+                                                }
                                                 return part.text ? <span key={index}>{part.text}</span> : null;
 
                                             case 'tool-dad_joke':
@@ -188,52 +198,29 @@ export default function ChatInterfaceNew({ chatId, initialMessages, onNewChat }:
                                                 }
                                                 break;
 
-                                            case 'tool-generate_image':
-                                                const callId = part.toolCallId;
-
+                                            case 'tool-movie_search':
                                                 switch (part.state) {
                                                     case 'input-streaming':
+                                                    case 'input-available':
                                                         return (
                                                             <div key={index} className="text-xs opacity-75 italic">
-                                                                Preparing image request...
+                                                                Searching for movies...
                                                             </div>
                                                         );
-                                                    case 'input-available':
-                                                        // Show approval UI
-                                                        return (
-                                                            <ImageGenerationApproval
-                                                                key={index}
-                                                                prompt={part.input.prompt}
-                                                                onApprove={() => {
-                                                                    console.log('✅ User approved image generation');
-                                                                    addToolResult({
-                                                                        tool: 'generate_image',
-                                                                        toolCallId: callId,
-                                                                        output: 'APPROVED'
-                                                                    });
-                                                                }}
-                                                                onDeny={() => {
-                                                                    console.log('❌ User denied image generation');
-                                                                    addToolResult({
-                                                                        tool: 'generate_image',
-                                                                        toolCallId: callId,
-                                                                        output: 'DENIED'
-                                                                    });
-                                                                }}
-                                                            />
-                                                        );
                                                     case 'output-available':
-                                                        // Show the generated image or approval result
+                                                        // Parse the structured response and render it
+                                                        const structuredOutput = parseToolResponse('movie_search', part.output as string);
+                                                        if (structuredOutput) {
+                                                            return (
+                                                                <div key={index}>
+                                                                    <StructuredOutputComponent output={structuredOutput} />
+                                                                </div>
+                                                            );
+                                                        }
+                                                        // Fallback to plain text if parsing fails
                                                         return (
-                                                            <div key={index}>
-                                                                {part.output === 'APPROVED' || part.output === 'DENIED' ? (
-                                                                    <div className="text-xs opacity-75 italic">
-                                                                        {part.output === 'APPROVED' ? '✅ Generating image...' : '❌ Image generation cancelled'}
-                                                                    </div>
-                                                                ) : (
-                                                                    // Real image URL will be here after execution
-                                                                    <img src={part.output as string} alt="Generated" className="rounded-lg max-w-full" />
-                                                                )}
+                                                            <div key={index} className="text-sm">
+                                                                {part.output}
                                                             </div>
                                                         );
                                                     case 'output-error':
