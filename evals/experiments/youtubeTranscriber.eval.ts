@@ -1,4 +1,5 @@
-import { runLLM } from '../../src/llm';
+import { generateText } from 'ai';
+import { openai } from '@ai-sdk/openai';
 import { youtubeTranscriberTool } from '../../src/tools/youtubeTranscriber';
 import { runEval } from '../evalTools';
 import { ToolCallMatch } from '../scorers';
@@ -16,11 +17,35 @@ const createToolCallMessage = (toolName: string) => ({
 });
 
 runEval('youtubeTranscriber', {
-    task: (input) =>
-        runLLM({
+    task: async (input) => {
+        const result = await generateText({
+            model: openai('gpt-4o'),
             messages: [{ role: 'user', content: input }],
-            tools: [youtubeTranscriberTool],
-        }),
+            tools: {
+                youtubeTranscriber: youtubeTranscriberTool
+            },
+            temperature: 1
+        });
+
+        // Transform AI SDK result to match scorer expectations
+        if (result.toolCalls && result.toolCalls.length > 0) {
+            return {
+                role: 'assistant',
+                tool_calls: result.toolCalls.map((toolCall: any) => ({
+                    type: 'function',
+                    function: {
+                        name: toolCall.toolName,
+                        arguments: JSON.stringify(toolCall.args)
+                    }
+                }))
+            };
+        } else {
+            return {
+                role: 'assistant',
+                content: result.text
+            };
+        }
+    },
     data: [
         // Direct video URL with question
         {

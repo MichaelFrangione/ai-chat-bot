@@ -137,7 +137,6 @@ FILTERING GUIDELINES:
         limit: z.number().nullable().describe('Number of movies to return. Use 1 for single recommendations (like "the best", "ultimate", "top pick"). Use null or higher numbers for multiple recommendations.'),
     }),
     execute: async ({ query, genre, director, year, limit }: { query: string; genre: string | null; director: string | null; year: number | null; limit: number | null; }, context: any) => {
-        console.log('movieSearch context:', context);
         // TODO: Personality not available in AI SDK tools context
         const personality = undefined; // Temporarily disabled until we find a way to pass personality to tools
 

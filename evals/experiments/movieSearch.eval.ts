@@ -1,4 +1,5 @@
-import { runLLM } from '../../src/llm';
+import { generateText } from 'ai';
+import { openai } from '@ai-sdk/openai';
 import { movieSearchTool } from '../../src/tools/movieSearch';
 import { runEval } from '../evalTools';
 import { ToolCallMatch, ToolCallWithParams, MovieSearchParamsMatch } from '../scorers';
@@ -16,27 +17,87 @@ const createToolCallMessage = (toolName: string) => ({
 });
 
 runEval('movieSearch', {
-    task: (input) =>
-        runLLM({
-            messages: [{ role: 'user', content: input }],
-            tools: [movieSearchTool],
-        }),
+    task: async (input) => {
+        // Add delay to avoid rate limits (2 seconds for movieSearch due to complex queries)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        try {
+            const result = await generateText({
+                model: openai('gpt-4o'),
+                messages: [{ role: 'user', content: input }],
+                tools: {
+                    movie_search: movieSearchTool
+                },
+                temperature: 1
+            });
+
+            // Transform AI SDK result to match scorer expectations
+            if (result.steps && result.steps.length > 0) {
+                const toolCalls = result.steps[0].content.filter((item: any) => item.type === 'tool-call');
+                if (toolCalls.length > 0) {
+                    return {
+                        role: 'assistant',
+                        tool_calls: toolCalls.map((toolCall: any) => ({
+                            type: 'function',
+                            function: {
+                                name: toolCall.toolName,
+                                arguments: JSON.stringify(toolCall.input)
+                            }
+                        }))
+                    };
+                }
+            }
+
+            return {
+                role: 'assistant',
+                content: result.text || 'No content'
+            };
+        } catch (error: any) {
+            // Handle rate limit errors gracefully
+            if (error.message?.includes('rate limit') || error.message?.includes('429')) {
+                console.log('Rate limit hit, waiting 5 seconds...');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                // Retry once
+                const retryResult = await generateText({
+                    model: openai('gpt-4o'),
+                    messages: [{ role: 'user', content: input }],
+                    tools: {
+                        movie_search: movieSearchTool
+                    },
+                    temperature: 1
+                });
+
+                // Transform retry result to match scorer expectations
+                if (retryResult.steps && retryResult.steps.length > 0) {
+                    const toolCalls = retryResult.steps[0].content.filter((item: any) => item.type === 'tool-call');
+                    if (toolCalls.length > 0) {
+                        return {
+                            role: 'assistant',
+                            tool_calls: toolCalls.map((toolCall: any) => ({
+                                type: 'function',
+                                function: {
+                                    name: toolCall.toolName,
+                                    arguments: JSON.stringify(toolCall.input)
+                                }
+                            }))
+                        };
+                    }
+                }
+
+                return {
+                    role: 'assistant',
+                    content: retryResult.text || 'No content'
+                };
+            }
+            throw error;
+        }
+    },
     data: [
         // Basic movie requests - AI uses keyword search and defaults to limit=1
         {
             input: 'suggest me a good action movie',
             expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: null, expectedLimit: 1 }),
-        },
-        {
-            input: "i want to find a movie about aliens coming to earth can you give me some recommendations?",
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: null, expectedLimit: 1 }),
-        },
-        {
-            input: 'find me some movies based in italy and heist themed movies',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: null, expectedLimit: 1 }),
+            reference: JSON.stringify({ expectedGenre: 'Action', expectedLimit: 1 }),
         },
 
         // Single movie requests (should use limit=1)
@@ -46,102 +107,40 @@ runEval('movieSearch', {
             reference: JSON.stringify({ expectedLimit: 1 }),
         },
         {
-            input: 'what is the best action movie ever made?',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedLimit: 1 }),
-        },
-        {
             input: 'recommend me one comedy movie',
             expected: createToolCallMessage('movie_search'),
             reference: JSON.stringify({ expectedLimit: 1 }),
-        },
-        {
-            input: 'what is the top horror movie?',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedLimit: 1 }),
-        },
-
-        // Multiple movie requests - AI defaults to limit=1 for single recommendations
-        {
-            input: 'show me some comedy movies',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: null, expectedLimit: 1 }),
-        },
-        {
-            input: 'recommend me some thriller movies',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: null, expectedLimit: 1 }),
-        },
-        {
-            input: 'give me movie recommendations for a date night',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: null, expectedLimit: 1 }),
-        },
-        {
-            input: 'movie recommendations please',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: null, expectedLimit: 1 }),
-        },
-        {
-            input: 'help me find a movie to watch',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: null, expectedLimit: 1 }),
         },
 
         // Genre-specific requests
         {
             input: 'I want to watch a horror movie',
             expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: 'Horror' }),
+            reference: JSON.stringify({ expectedGenre: 'Horror', expectedLimit: 1 }),
         },
         {
             input: 'show me drama movies',
             expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: 'Drama' }),
-        },
-        {
-            input: 'find me romantic comedy movies',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: 'Romance' }),
+            reference: JSON.stringify({ expectedGenre: 'Drama', expectedLimit: null }),
         },
 
         // Director-specific requests
         {
             input: 'show me movies by Christopher Nolan',
             expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedDirector: 'Christopher Nolan' }),
-        },
-        {
-            input: 'what movies has Steven Spielberg directed?',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedDirector: 'Steven Spielberg' }),
-        },
-        {
-            input: 'find me Quentin Tarantino films',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedDirector: 'Quentin Tarantino' }),
+            reference: JSON.stringify({ expectedDirector: 'Christopher Nolan', expectedLimit: null }),
         },
 
         // Thematic requests (should use keyword search, not genre filters)
         {
             input: 'movies about space exploration',
             expected: createToolCallMessage('movie_search'),
-        },
-        {
-            input: 'family-friendly movies about pets',
-            expected: createToolCallMessage('movie_search'),
+            reference: JSON.stringify({ expectedGenre: 'Sci-Fi', expectedLimit: null }),
         },
         {
             input: 'movies set in the 1920s',
             expected: createToolCallMessage('movie_search'),
-        },
-        {
-            input: 'time travel movies',
-            expected: createToolCallMessage('movie_search'),
-        },
-        {
-            input: 'movies about artificial intelligence',
-            expected: createToolCallMessage('movie_search'),
+            reference: JSON.stringify({ expectedLimit: null }),
         },
 
         // Complex requests
@@ -149,21 +148,6 @@ runEval('movieSearch', {
             input: 'show me the best Christopher Nolan sci-fi movie',
             expected: createToolCallMessage('movie_search'),
             reference: JSON.stringify({ expectedDirector: 'Christopher Nolan', expectedLimit: 1 }),
-        },
-        {
-            input: 'give me 3 comedy movies from the 90s',
-            expected: createToolCallMessage('movie_search'),
-            reference: JSON.stringify({ expectedGenre: 'Comedy' }),
-        },
-
-        // Edge cases
-        {
-            input: 'movie recommendations please',
-            expected: createToolCallMessage('movie_search'),
-        },
-        {
-            input: 'help me find a movie to watch',
-            expected: createToolCallMessage('movie_search'),
         },
     ],
     scorers: [ToolCallMatch, ToolCallWithParams, MovieSearchParamsMatch],

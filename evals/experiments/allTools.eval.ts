@@ -1,4 +1,5 @@
-import { runLLM } from '../../src/llm';
+import { generateText } from 'ai';
+import { openai } from '@ai-sdk/openai';
 import { dadJokeTool } from '../../src/tools/dadJoke';
 import { generateImageTool } from '../../src/tools/generateImage';
 import { movieSearchTool } from '../../src/tools/movieSearch';
@@ -30,11 +31,40 @@ const allTools = [
 ];
 
 runEval('allTools', {
-    task: (input) =>
-        runLLM({
+    task: async (input) => {
+        const result = await generateText({
+            model: openai('gpt-4o'),
             messages: [{ role: 'user', content: input }],
-            tools: allTools,
-        }),
+            tools: {
+                dad_joke: dadJokeTool,
+                generate_image: generateImageTool,
+                reddit: redditTool,
+                movie_search: movieSearchTool,
+                youtubeTranscriber: youtubeTranscriberTool,
+                websiteScraper: websiteScraperTool
+            },
+            temperature: 1
+        });
+
+        // Transform AI SDK result to match scorer expectations
+        if (result.toolCalls && result.toolCalls.length > 0) {
+            return {
+                role: 'assistant',
+                tool_calls: result.toolCalls.map((toolCall: any) => ({
+                    type: 'function',
+                    function: {
+                        name: toolCall.toolName,
+                        arguments: JSON.stringify(toolCall.args)
+                    }
+                }))
+            };
+        } else {
+            return {
+                role: 'assistant',
+                content: result.text
+            };
+        }
+    },
     data: [
         {
             input: 'tell me a funny dad joke',

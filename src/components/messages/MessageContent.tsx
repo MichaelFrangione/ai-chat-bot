@@ -9,27 +9,18 @@ interface MessageContentProps {
 }
 
 export default function MessageContent({ message, personality, addToolResult }: MessageContentProps) {
-    // Find the index of the first structured tool result to suppress text after it
-    const getStructuredToolIndex = (toolType: string) =>
-        message.parts.findIndex((part: any) => part.type === toolType && part.state === 'output-available');
-
-    const structuredToolIndexes = [
-        getStructuredToolIndex('tool-movie_search'),
-        getStructuredToolIndex('tool-reddit'),
-        getStructuredToolIndex('tool-youtubeTranscriber'),
-        getStructuredToolIndex('tool-websiteScraper'),
-        getStructuredToolIndex('tool-generate_image')
-    ].filter(index => index !== -1);
-
-    const firstStructuredToolIndex = structuredToolIndexes.length > 0
-        ? Math.min(...structuredToolIndexes)
-        : -1;
+    // Check if we have any structured tool outputs
+    const hasStructuredOutput = message.parts?.some((part: any) =>
+        part.type.startsWith('tool-') &&
+        part.state === 'output-available' &&
+        part.type !== 'tool-dad_joke' // dad jokes don't have structured output
+    );
 
     const renderedParts = message.parts.map((part: any, index: number) => {
         switch (part.type) {
             case 'text':
-                // Suppress text content if it comes AFTER the first structured tool result
-                if (firstStructuredToolIndex !== -1 && index > firstStructuredToolIndex) {
+                // Hide text when structured output exists (to avoid redundancy)
+                if (hasStructuredOutput) {
                     return null;
                 }
                 return part.text ? <span key={index}>{part.text}</span> : null;
@@ -54,5 +45,5 @@ export default function MessageContent({ message, personality, addToolResult }: 
         );
     }
 
-    return <>{renderedParts}</>;
+    return renderedParts;
 }

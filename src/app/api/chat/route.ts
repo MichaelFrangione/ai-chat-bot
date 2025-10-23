@@ -106,8 +106,6 @@ export async function POST(req: Request) {
             systemPrompt = `Previous conversation summary: ${summary}\n\n${systemPrompt}`;
         }
 
-        console.log('System prompt (first 200 chars):', systemPrompt.substring(0, 200));
-
         // Validate messages if they contain tools (use trimmed messages if summarized)
         const validatedMessages = await validateUIMessages({
             messages: messagesToProcess,
@@ -141,10 +139,8 @@ export async function POST(req: Request) {
                     // Process image generation
                     for (const part of lastMessage.parts) {
                         if (isToolUIPart(part) && part.type === 'tool-generate_image' && part.state === 'output-available' && part.output === 'APPROVED') {
-                            console.log('✅ Fresh approval - generating image with your existing tool');
-
+                            const promptValue = (part as any).input.prompt;
                             try {
-                                const promptValue = (part as any).input.prompt;
                                 const result = await generateImageTool.execute({
                                     prompt: promptValue,
                                     approved: true
@@ -160,13 +156,10 @@ export async function POST(req: Request) {
                                     output: result, // Send the full structured JSON response
                                 });
                             } catch (error) {
-                                console.error('❌ Image generation error:', error);
-                                console.error('❌ Error details:', {
-                                    message: error.message,
-                                    stack: error.stack,
-                                    promptValue,
-                                    personality,
-                                    userMessage: promptValue
+                                console.error('❌ Image generation error:', {
+                                    message: error instanceof Error ? error.message : String(error),
+                                    prompt: promptValue,
+                                    personality
                                 });
                                 writer.write({
                                     type: 'tool-output-error',
