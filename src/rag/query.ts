@@ -36,14 +36,6 @@ export const queryMovies = async ({
         }
     }
 
-    console.log('Query params:', {
-        data: query,
-        topK,
-        filter: filterStr || undefined,
-        includeMetadata: true,
-        includeData: true,
-    });
-
     try {
         // Test with a simple filter first
         const queryParams: any = {
@@ -57,8 +49,6 @@ export const queryMovies = async ({
         if (filterStr) {
             queryParams.filter = filterStr;
         }
-
-        console.log('Final query params:', queryParams);
 
         const results = await index.query(queryParams);
 

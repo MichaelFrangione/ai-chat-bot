@@ -6,6 +6,3 @@ export type AIMessage =
   | { role: 'tool'; content: string; tool_call_id: string; }
   | { role: 'assistant'; content?: string; tool_calls?: OpenAI.Chat.Completions.ChatCompletionMessageToolCall[]; };
 
-export interface ToolFn<A = any, T = any> {
-  (input: { userMessage: string; toolArgs: A; personality?: import('./src/constants/personalities').PersonalityKey; }): Promise<T>;
-}

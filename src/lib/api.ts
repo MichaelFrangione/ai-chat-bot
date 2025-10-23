@@ -1,9 +1,11 @@
-import { ChatMessage, ChatResponse } from '@/types/chat';
-
+// API client for chat operations
+// Note: This file is kept for legacy compatibility but most methods are unused
+// The new system uses the AI SDK with streaming in ChatInterface
 const API_BASE = '/api';
 
 export class ChatAPI {
-    static async sendMessage(message: string, personality?: string): Promise<ChatResponse> {
+    // Legacy method - unused in new system
+    static async sendMessage(message: string, personality?: string): Promise<any> {
         const response = await fetch(`${API_BASE}/chat`, {
             method: 'POST',
             headers: {
@@ -19,49 +21,21 @@ export class ChatAPI {
         return response.json();
     }
 
-    static async getMessages(): Promise<ChatResponse> {
-        const response = await fetch(`${API_BASE}/messages`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        return response.json();
+    // Legacy method - unused in new system
+    static async getMessages(): Promise<any> {
+        console.warn('ChatAPI.getMessages is deprecated');
+        return { success: false, messages: [] };
     }
 
-    static async approveAction(approval: boolean): Promise<ChatResponse> {
-        const response = await fetch(`${API_BASE}/approve`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ approval }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        return response.json();
+    // Legacy method - unused in new system
+    static async approveAction(approval: boolean): Promise<any> {
+        console.warn('ChatAPI.approveAction is deprecated');
+        return { success: false };
     }
 
+    // Legacy method - unused in new system
     static async resetChat(): Promise<{ success: boolean; message?: string; error?: string; }> {
-        const response = await fetch(`${API_BASE}/reset`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        return response.json();
+        console.warn('ChatAPI.resetChat is deprecated');
+        return { success: false, error: 'This method is deprecated' };
     }
 }

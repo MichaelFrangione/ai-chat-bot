@@ -1,15 +1,17 @@
-import { dadJokeToolDefinition } from "./dadJoke";
-import { generateImageToolDefinition } from "./generateImage";
-import { movieSearchToolDefinition } from "./movieSearch";
-import { redditToolDefinition } from "./reddit";
-import { youtubeTranscriberToolDefinition } from "./youtubeTranscriber";
-import { websiteScraperToolDefinition } from "./websiteScraper";
+import { dadJokeTool } from "./dadJoke";
+import { generateImageTool, askForImageApprovalTool } from "./generateImage";
+import { movieSearchTool } from "./movieSearch";
+import { redditTool } from "./reddit";
+import { youtubeTranscriberTool } from "./youtubeTranscriber";
+import { websiteScraperTool } from "./websiteScraper";
 
-export const tools = [
-    dadJokeToolDefinition,
-    generateImageToolDefinition,
-    redditToolDefinition,
-    movieSearchToolDefinition,
-    youtubeTranscriberToolDefinition,
-    websiteScraperToolDefinition,
-];
+// AI SDK tools (new format with inputSchema)
+export const aiSdkTools = {
+    dad_joke: dadJokeTool,
+    askForImageApproval: askForImageApprovalTool,
+    generate_image: generateImageTool,
+    reddit: redditTool,
+    movie_search: movieSearchTool,
+    youtubeTranscriber: youtubeTranscriberTool,
+    websiteScraper: websiteScraperTool,
+};

@@ -9,14 +9,6 @@ interface YoutubeTranscriptProps {
 
 export default function YoutubeTranscript({ output }: YoutubeTranscriptProps) {
     const { currentTheme } = useTheme();
-    const { data } = output;
-
-    // Helper to format timestamp as MM:SS
-    const formatTimestamp = (seconds: number) => {
-        const minutes = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${minutes}:${secs.toString().padStart(2, '0')}`;
-    };
 
     return (
         <div
@@ -56,64 +48,23 @@ export default function YoutubeTranscript({ output }: YoutubeTranscriptProps) {
                 )}
             </div>
 
-            {/* Transcript Chunks */}
-            <div className="space-y-4">
-                {data.relevant.map((chunk, index) => (
-                    <div
-                        key={index}
-                        className="rounded-lg p-4 border hover:shadow-md transition-shadow"
-                        style={{
-                            backgroundColor: currentTheme.colors.background,
-                            borderColor: currentTheme.colors.border
-                        }}
+            {/* Video Link */}
+            {output.data.relevant.length > 0 && (
+                <div className="mb-4">
+                    <a
+                        href={output.data.relevant[0].metadata.source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-sm transition-colors hover:underline"
+                        style={{ color: currentTheme.colors.accent }}
                     >
-                        <div className="mb-2 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <span
-                                    className="text-xs font-mono px-2 py-1 rounded"
-                                    style={{
-                                        backgroundColor: currentTheme.colors.surface,
-                                        color: currentTheme.colors.accent
-                                    }}
-                                >
-                                    {formatTimestamp(chunk.metadata.timestamp)}
-                                </span>
-                                <span
-                                    className="text-xs opacity-60"
-                                    style={{ color: currentTheme.colors.text }}
-                                >
-                                    Relevance: {Math.round(chunk.score * 100)}%
-                                </span>
-                            </div>
-                            <a
-                                href={`${chunk.metadata.source}?t=${Math.floor(chunk.metadata.timestamp)}s`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs px-2 py-1 rounded transition-colors hover:underline"
-                                style={{
-                                    color: currentTheme.colors.accent,
-                                }}
-                            >
-                                Watch at this time →
-                            </a>
-                        </div>
-                        <p
-                            className="text-sm leading-relaxed"
-                            style={{ color: currentTheme.colors.text }}
-                        >
-                            {chunk.text}
-                        </p>
-                        {chunk.metadata.title && (
-                            <p
-                                className="text-xs mt-2 opacity-60 italic"
-                                style={{ color: currentTheme.colors.text }}
-                            >
-                                From: {chunk.metadata.title}
-                            </p>
-                        )}
-                    </div>
-                ))}
-            </div>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                        </svg>
+                        Watch on YouTube
+                    </a>
+                </div>
+            )}
         </div>
     );
 }

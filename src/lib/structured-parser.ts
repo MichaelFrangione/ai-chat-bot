@@ -1,4 +1,4 @@
-import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput, RedditPostsOutput } from '../types/structured';
+import type { StructuredOutput, MovieRecommendationsOutput, ImageGenerationOutput, RedditPostsOutput, YoutubeTranscriberOutput, WebsiteScraperOutput } from '../types/structured';
 
 export function parseAssistantResponse(content: string): StructuredOutput | null {
     // Try to parse JSON responses from assistant
@@ -16,6 +16,14 @@ export function parseAssistantResponse(content: string): StructuredOutput | null
 
         if (jsonResponse.type === 'image_generation' && jsonResponse.data && jsonResponse.data.url) {
             return jsonResponse as ImageGenerationOutput;
+        }
+
+        if (jsonResponse.type === 'youtube_transcriber' && jsonResponse.data && jsonResponse.data.relevant) {
+            return jsonResponse as YoutubeTranscriberOutput;
+        }
+
+        if (jsonResponse.type === 'website_scraper' && jsonResponse.data && jsonResponse.data.relevant) {
+            return jsonResponse as WebsiteScraperOutput;
         }
 
     } catch (error) {
@@ -36,7 +44,12 @@ export function parseToolResponse(toolName: string, response: string): Structure
     if (toolName === 'reddit') {
         return parseRedditResponse(response);
     }
-    // youtubeTranscriber now returns plain text, not structured output
+    if (toolName === 'youtubeTranscriber') {
+        return parseYoutubeTranscriberResponse(response);
+    }
+    if (toolName === 'websiteScraper') {
+        return parseWebsiteScraperResponse(response);
+    }
     return null;
 }
 
@@ -267,6 +280,36 @@ function parseRedditResponse(response: string): RedditPostsOutput | null {
         }
     } catch (error) {
         console.error('Error parsing Reddit response:', error);
+    }
+
+    return null;
+}
+
+function parseYoutubeTranscriberResponse(response: string): YoutubeTranscriberOutput | null {
+    try {
+        const data = JSON.parse(response);
+
+        // Check if this is a structured response from the tool
+        if (data.type === 'youtube_transcriber' && data.data && data.data.relevant) {
+            return data as YoutubeTranscriberOutput;
+        }
+    } catch (error) {
+        console.error('Error parsing YouTube transcriber response:', error);
+    }
+
+    return null;
+}
+
+function parseWebsiteScraperResponse(response: string): WebsiteScraperOutput | null {
+    try {
+        const data = JSON.parse(response);
+
+        // Check if this is a structured response from the tool
+        if (data.type === 'website_scraper' && data.data && data.data.relevant) {
+            return data as WebsiteScraperOutput;
+        }
+    } catch (error) {
+        console.error('Error parsing website scraper response:', error);
     }
 
     return null;

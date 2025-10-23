@@ -88,4 +88,28 @@ export interface YoutubeTranscriberOutput {
     contextualMessage?: string;
 }
 
-export type StructuredOutput = MovieRecommendationsOutput | ImageGenerationOutput | RedditPostsOutput | YoutubeTranscriberOutput;
+export interface WebsiteScraperChunk {
+    text: string;
+    score: number;
+    metadata: {
+        source: string;
+        title: string;
+        position: number;
+    };
+}
+
+export interface WebsiteScraperOutput {
+    type: 'website_scraper';
+    data: {
+        relevant: WebsiteScraperChunk[];
+        url: string;
+        question: string;
+    };
+    metadata: {
+        title: string;
+        description: string;
+    };
+    contextualMessage?: string;
+}
+
+export type StructuredOutput = MovieRecommendationsOutput | ImageGenerationOutput | RedditPostsOutput | YoutubeTranscriberOutput | WebsiteScraperOutput;

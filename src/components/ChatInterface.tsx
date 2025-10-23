@@ -1,133 +1,66 @@
 'use client';
 
+import { useChat } from '@ai-sdk/react';
+import {
+    DefaultChatTransport,
+    lastAssistantMessageIsCompleteWithToolCalls,
+    createIdGenerator,
+} from 'ai';
 import { useState, useEffect, useRef } from 'react';
-import { ChatMessage } from '@/types/chat';
-import { ChatAPI } from '@/lib/api';
-import MessageList from './MessageList';
-import MessageInput from './MessageInput';
-import ApprovalDialog from './ApprovalDialog';
-import ChatMenu from './ChatMenu';
-import { PERSONALITIES, PersonalityKey } from '@/constants/personalities';
 import { useTheme } from '@/contexts/ThemeContext';
+import { usePersonality } from '@/contexts/PersonalityContext';
+import { PERSONALITIES, PersonalityKey } from '@/constants/personalities';
+import SuggestionChips from './SuggestionChips';
+import { useAssistantStatus } from '@/hooks/useAssistantStatus';
+import { useImageGenerationStatus } from '@/hooks/useImageGenerationStatus';
+import { useAutoScroll } from '@/hooks/useAutoScroll';
+import MessagesList from './messages/MessagesList';
 
 interface ChatInterfaceProps {
-    themeClasses: {
-        background: string;
-        text: string;
-        surface: string;
-        border: string;
-        gradient: string;
-    };
+    chatId: string;
+    initialMessages: any[];
+    onNewChat: () => void;
 }
 
-export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
+export default function ChatInterface({ chatId, initialMessages, onNewChat }: ChatInterfaceProps) {
     const { currentTheme } = useTheme();
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [draft, setDraft] = useState('');
-    const [approvalRequest, setApprovalRequest] = useState<{
-        toolName: string;
-        toolArgs: any;
-        message: string;
-    } | null>(null);
-    const [personality, setPersonality] = useState<PersonalityKey>('assistant');
+    const { personality, setPersonality } = usePersonality();
+    const [input, setInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+    const { messages, sendMessage, addToolResult, error, status } = useChat({
+        id: chatId,
+        messages: initialMessages,
+        sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+        // Generate client-side IDs with prefix
+        generateId: createIdGenerator({
+            prefix: 'msgc',
+            size: 16,
+        }),
+        transport: new DefaultChatTransport({
+            api: '/api/chat',
+            // Only send the last message to reduce bandwidth
+            prepareSendMessagesRequest({ messages, id }) {
+                return {
+                    body: {
+                        message: messages[messages.length - 1],
+                        id
+                    }
+                };
+            },
+        }),
+        onError: (error: Error) => {
+            console.error('Chat error:', error);
+        },
+    });
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+    // Use custom hooks for cleaner logic
+    const { isAssistantResponding } = useAssistantStatus(messages, status);
+    const { isWaitingForUserInput } = useImageGenerationStatus(messages);
+    const { messagesContainerRef } = useAutoScroll(messages);
 
-    useEffect(() => {
-        // Load initial messages
-        loadMessages();
-        // Load saved personality
-        try {
-            const saved = localStorage.getItem('selectedPersonality');
-            if (saved && (saved in PERSONALITIES)) {
-                setPersonality(saved as PersonalityKey);
-            }
-        } catch { }
-    }, []);
-
-    const loadMessages = async () => {
-        try {
-            const response = await ChatAPI.getMessages();
-            if (response.success) {
-                setMessages(response.messages);
-            }
-        } catch (error) {
-            console.error('Failed to load messages:', error);
-        }
-    };
-
-    const handleSendMessage = async (message: string) => {
-        if (!message.trim() || isLoading) return;
-
-        const userMessage: ChatMessage = {
-            role: 'user',
-            content: message,
-            id: Date.now().toString(),
-        };
-
-        setMessages(prev => [...prev, userMessage]);
-        setIsLoading(true);
-
-        try {
-            const response = await ChatAPI.sendMessage(message, personality);
-            if (response.success) {
-                setMessages(response.messages);
-
-                // Check if approval is needed
-                if (response.needsApproval && response.approvalType === 'image') {
-                    setApprovalRequest({
-                        toolName: 'generateImage',
-                        toolArgs: JSON.parse(response.toolCall!.function.arguments),
-                        message: 'Do you approve generating an image?'
-                    });
-                }
-            }
-        } catch (error) {
-            console.error('Failed to send message:', error);
-            const errorMessage: ChatMessage = {
-                role: 'assistant',
-                content: 'Sorry, I encountered an error. Please try again.',
-                id: Date.now().toString(),
-            };
-            setMessages(prev => [...prev, errorMessage]);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleApproval = async (approved: boolean) => {
-        if (!approvalRequest) return;
-
-        setIsLoading(true);
-        setApprovalRequest(null);
-
-        try {
-            const response = await ChatAPI.approveAction(approved);
-            if (response.success) {
-                setMessages(response.messages);
-            }
-        } catch (error) {
-            console.error('Failed to handle approval:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handlePersonalityChange = (value: string) => {
-        const key = (value in PERSONALITIES ? value : 'assistant') as PersonalityKey;
-        setPersonality(key);
-        try {
-            localStorage.setItem('selectedPersonality', key);
-        } catch { }
-    };
+    // Only disable input when AI is actively processing (not when waiting for user input)
+    const shouldDisableInput = status === 'submitted' && !isWaitingForUserInput;
 
     return (
         <div
@@ -137,10 +70,7 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
                 borderColor: currentTheme.colors.border
             }}
         >
-            {/** Resolve assistant label from selected personality */}
-            {(() => {
-                return null;
-            })()}
+            {/* Header */}
             <div
                 className="px-6 py-4 border-b"
                 style={{
@@ -164,40 +94,110 @@ export default function ChatInterface({ themeClasses }: ChatInterfaceProps) {
                                 borderColor: currentTheme.colors.border,
                             }}
                             value={personality}
-                            onChange={(e) => handlePersonalityChange(e.target.value)}
+                            onChange={(e) => setPersonality(e.target.value as PersonalityKey)}
                         >
                             {Object.entries(PERSONALITIES).map(([key, meta]) => (
                                 <option key={key} value={key}>{meta.label}</option>
                             ))}
                         </select>
                     </div>
-                    <ChatMenu />
+                    <button
+                        onClick={onNewChat}
+                        className="text-sm px-4 py-2 rounded-md hover:opacity-80 transition-opacity font-medium"
+                        style={{
+                            backgroundColor: currentTheme.colors.componentColor,
+                            color: currentTheme.colors.text,
+                        }}
+                    >
+                        + New Chat
+                    </button>
                 </div>
             </div>
 
-            <MessageList
-                messages={messages}
-                isLoading={isLoading}
-                messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
-                assistantLabel={PERSONALITIES[personality]?.label || 'AI Assistant'}
-                assistantLoadingText={PERSONALITIES[personality]?.loadingText || 'Thinking...'}
-                onQuickPrompt={(text) => handleSendMessage(text)}
-                showSecondarySuggestions={!isLoading && draft.trim().length === 0}
-            />
-
-            <MessageInput
-                onSendMessage={handleSendMessage}
-                onInputChange={(text) => setDraft(text)}
-                disabled={isLoading}
-            />
-
-            {approvalRequest && (
-                <ApprovalDialog
-                    request={approvalRequest}
-                    onApprove={(approved: boolean) => handleApproval(approved)}
-                    onClose={() => setApprovalRequest(null)}
+            {/* Messages */}
+            <div
+                ref={messagesContainerRef}
+                className="flex-1 overflow-y-auto p-6 space-y-4"
+                style={{
+                    backgroundColor: currentTheme.colors.background,
+                }}
+            >
+                <MessagesList
+                    messages={messages}
+                    personality={personality}
+                    currentTheme={currentTheme}
+                    addToolResult={addToolResult}
+                    error={error || null}
                 />
-            )}
+
+                {/* Scroll anchor */}
+                <div ref={messagesEndRef} style={{ marginBottom: '20px' }} />
+
+                {/* Loading indicator when processing */}
+                {status === 'submitted' && (
+                    <div className="flex items-center justify-center py-4">
+                        <div className="flex items-center space-x-2 text-gray-500">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500"></div>
+                            <span className="text-sm">Processing...</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Show suggestion chips below messages when it's user's turn and not waiting for input */}
+                {!isAssistantResponding && !isWaitingForUserInput && (
+                    <SuggestionChips
+                        count={4}
+                        onQuickPrompt={(text) => {
+                            sendMessage({ text });
+                        }}
+                    />
+                )}
+            </div>
+
+            {/* Input */}
+            <div
+                className="p-4 border-t"
+                style={{
+                    backgroundColor: currentTheme.colors.surface,
+                    borderTopColor: currentTheme.colors.border
+                }}
+            >
+                <form
+                    onSubmit={e => {
+                        e.preventDefault();
+                        if (input.trim() && !isWaitingForUserInput) {
+                            sendMessage({ text: input });
+                            setInput('');
+                        }
+                    }}
+                    className="flex gap-2"
+                >
+                    <input
+                        type="text"
+                        value={input}
+                        onChange={e => setInput(e.target.value)}
+                        placeholder={isWaitingForUserInput ? "Please respond to the image generation request above..." : status === 'submitted' ? "Processing..." : "Type your message..."}
+                        disabled={shouldDisableInput}
+                        className="flex-1 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{
+                            backgroundColor: currentTheme.colors.background,
+                            borderColor: currentTheme.colors.border,
+                            color: currentTheme.colors.text
+                        }}
+                    />
+                    <button
+                        type="submit"
+                        disabled={!input.trim() || shouldDisableInput}
+                        className="px-6 py-2 rounded-lg font-medium transition-opacity disabled:opacity-50"
+                        style={{
+                            backgroundColor: currentTheme.colors.componentColor,
+                            color: currentTheme.colors.text
+                        }}
+                    >
+                        Send
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

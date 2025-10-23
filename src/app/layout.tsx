@@ -4,6 +4,7 @@ import { VT323 } from 'next/font/google';
 import { Michroma } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { PersonalityProvider } from '@/contexts/PersonalityContext';
 import ThemeWrapper from '@/components/ThemeWrapper';
 import { Analytics } from "@vercel/analytics/next";
 
@@ -34,10 +35,12 @@ export default function RootLayout({
         <html lang="en">
             <body className={`${inter.className} ${vt323.variable} ${michroma.variable}`}>
                 <ThemeProvider>
-                    <ThemeWrapper>
-                        {children}
-                        <Analytics />
-                    </ThemeWrapper>
+                    <PersonalityProvider>
+                        <ThemeWrapper>
+                            {children}
+                            <Analytics />
+                        </ThemeWrapper>
+                    </PersonalityProvider>
                 </ThemeProvider>
             </body>
         </html>
