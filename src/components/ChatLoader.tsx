@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ChatInterfaceNew from './ChatInterfaceNew';
+import ChatInterface from './ChatInterface';
 
 const CHAT_ID_KEY = 'current-chat-id';
 
@@ -76,10 +76,10 @@ export default function ChatLoader() {
         );
     }
 
-    // Only render ChatInterfaceNew once we have the data
+    // Only render ChatInterface once we have the data
     // Use key prop to force remount when chat ID changes
     return (
-        <ChatInterfaceNew
+        <ChatInterface
             key={chatId}
             chatId={chatId}
             initialMessages={initialMessages}

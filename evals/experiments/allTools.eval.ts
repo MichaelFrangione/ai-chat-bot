@@ -1,10 +1,10 @@
 import { runLLM } from '../../src/llm';
-import { dadJokeToolDefinition } from '../../src/tools/dadJoke';
-import { generateImageToolDefinition } from '../../src/tools/generateImage';
-import { movieSearchToolDefinition } from '../../src/tools/movieSearch';
-import { redditToolDefinition } from '../../src/tools/reddit';
-import { youtubeTranscriberToolDefinition } from '../../src/tools/youtubeTranscriber';
-import { websiteScraperToolDefinition } from '../../src/tools/websiteScraper';
+import { dadJokeTool } from '../../src/tools/dadJoke';
+import { generateImageTool } from '../../src/tools/generateImage';
+import { movieSearchTool } from '../../src/tools/movieSearch';
+import { redditTool } from '../../src/tools/reddit';
+import { youtubeTranscriberTool } from '../../src/tools/youtubeTranscriber';
+import { websiteScraperTool } from '../../src/tools/websiteScraper';
 import { runEval } from '../evalTools';
 import { ToolCallMatch } from '../scorers';
 
@@ -21,12 +21,12 @@ const createToolCallMessage = (toolName: string) => ({
 });
 
 const allTools = [
-    dadJokeToolDefinition,
-    generateImageToolDefinition,
-    redditToolDefinition,
-    movieSearchToolDefinition,
-    youtubeTranscriberToolDefinition,
-    websiteScraperToolDefinition
+    dadJokeTool,
+    generateImageTool,
+    redditTool,
+    movieSearchTool,
+    youtubeTranscriberTool,
+    websiteScraperTool
 ];
 
 runEval('allTools', {
@@ -38,27 +38,27 @@ runEval('allTools', {
     data: [
         {
             input: 'tell me a funny dad joke',
-            expected: createToolCallMessage(dadJokeToolDefinition.name),
+            expected: createToolCallMessage('dad_joke'),
         },
         {
             input: 'generate an image of mars',
-            expected: createToolCallMessage(generateImageToolDefinition.name),
+            expected: createToolCallMessage('generate_image'),
         },
         {
             input: 'what is the most upvoted post on reddit',
-            expected: createToolCallMessage(redditToolDefinition.name),
+            expected: createToolCallMessage('reddit'),
         },
         {
             input: 'what movies did Christopher Nolan direct?',
-            expected: createToolCallMessage(movieSearchToolDefinition.name),
+            expected: createToolCallMessage('movie_search'),
         },
         {
             input: 'https://www.youtube.com/watch?v=abc123 what are the main points in this video?',
-            expected: createToolCallMessage(youtubeTranscriberToolDefinition.name),
+            expected: createToolCallMessage('youtubeTranscriber'),
         },
         {
             input: 'summarize this article: https://example.com/news-article',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
     ],
     scorers: [ToolCallMatch],

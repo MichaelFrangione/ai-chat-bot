@@ -10,7 +10,7 @@ import {
     createIdGenerator
 } from 'ai';
 import { dadJokeTool } from '@/tools/dadJoke';
-import { generateImage, generateImageValidationTool } from '@/tools/generateImage';
+import { generateImageTool, generateImageValidationTool } from '@/tools/generateImage';
 import { movieSearchTool } from '@/tools/movieSearch';
 import { redditTool } from '@/tools/reddit';
 import { websiteScraperTool } from '@/tools/websiteScraper';
@@ -38,31 +38,25 @@ const tools = {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { message, id: chatId } = body as { message?: UIMessage; id?: string; messages?: UIMessage[]; };
+        const { message, id: chatId } = body as { message: UIMessage; id: string; };
 
-        // Support both old format (messages array) and new format (single message + id)
-        let messages: UIMessage[];
-
-        if (chatId && message) {
-            // New format with persistence
-            const previousMessages = await loadChat(chatId);
-            // Append new message and deduplicate by ID (keeps last occurrence)
-            // This handles tool calls where client sends updated assistant message
-            const allMessages = [...previousMessages, message];
-            messages = Array.from(
-                new Map(allMessages.map(msg => [msg.id, msg])).values()
-            );
-        } else if (body.messages) {
-            // Old format for backward compatibility
-            messages = body.messages;
-        } else {
+        if (!chatId || !message) {
             return new Response(JSON.stringify({
-                error: 'Either provide { message, id } or { messages }',
+                error: 'Both message and id are required',
             }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }
             });
         }
+
+        // Load previous messages and append new message
+        const previousMessages = await loadChat(chatId);
+        // Append new message and deduplicate by ID (keeps last occurrence)
+        // This handles tool calls where client sends updated assistant message
+        const allMessages = [...previousMessages, message];
+        const messages = Array.from(
+            new Map(allMessages.map(msg => [msg.id, msg])).values()
+        );
 
         // Read personality from cookie (simple, reliable, server-side) 
         const cookieHeader = req.headers.get('cookie') || '';
@@ -151,11 +145,10 @@ export async function POST(req: Request) {
 
                             try {
                                 const promptValue = (part as any).input.prompt;
-                                const result = await generateImage({
-                                    toolArgs: { prompt: promptValue },
-                                    userMessage: promptValue,
-                                    personality
-                                });
+                                const result = await generateImageTool.execute({
+                                    prompt: promptValue,
+                                    approved: true
+                                }, { metadata: { personality, userMessage: promptValue } });
 
                                 console.log('🎨 Image generation result:', result.substring(0, 100));
 

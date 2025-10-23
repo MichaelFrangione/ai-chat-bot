@@ -1,6 +1,6 @@
 // API client for chat operations
 // Note: This file is kept for legacy compatibility but most methods are unused
-// The new system uses the AI SDK with streaming in ChatInterfaceNew
+// The new system uses the AI SDK with streaming in ChatInterface
 const API_BASE = '/api';
 
 export class ChatAPI {

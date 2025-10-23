@@ -1,5 +1,5 @@
 import { runLLM } from '../../src/llm';
-import { websiteScraperToolDefinition } from '../../src/tools/websiteScraper';
+import { websiteScraperTool } from '../../src/tools/websiteScraper';
 import { runEval } from '../evalTools';
 import { ToolCallMatch } from '../scorers';
 
@@ -19,99 +19,99 @@ runEval('websiteScraper', {
     task: (input) =>
         runLLM({
             messages: [{ role: 'user', content: input }],
-            tools: [websiteScraperToolDefinition],
+            tools: [websiteScraperTool],
         }),
     data: [
         // Direct article URL with question
         {
             input: 'https://example.com/article what is this article about?',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'can you tell me what https://news.example.com/story is about?',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
 
         // Summarization requests
         {
             input: 'summarize this article: https://blog.example.com/post',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'give me a summary of https://medium.com/article-title',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'what is the summary of this webpage https://example.com/page',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
 
         // Specific questions about article content
         {
             input: 'https://news.example.com/politics what are the main arguments in this article?',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'what was the conclusion of this article? https://blog.example.com/analysis',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'can you find what they say about climate change in this article: https://science.example.com/climate',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
 
         // Key points and takeaways
         {
             input: 'what are the key points from https://example.com/research',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'list the main findings in this article https://journal.example.com/study',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
 
         // Different phrasing
         {
             input: 'analyze this article: https://news.example.com/breaking',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'read this and tell me the main points: https://blog.example.com/post-2024',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'what does this article say? https://example.com/opinion',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
 
         // Complex questions
         {
             input: 'https://example.com/comparison compare the different approaches mentioned in this article',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'what evidence does the author provide in this article: https://research.example.com/paper',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
 
         // News-specific requests
         {
             input: 'what happened according to this news article? https://news.example.com/breaking-news',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'give me the facts from this article: https://nytimes.com/article-title',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
 
         // Blog/opinion pieces
         {
             input: 'what is the author\'s opinion in this blog post? https://medium.com/@author/post',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
         {
             input: 'summarize the arguments in this opinion piece: https://example.com/opinion-2024',
-            expected: createToolCallMessage(websiteScraperToolDefinition.name),
+            expected: createToolCallMessage('websiteScraper'),
         },
     ],
     scorers: [ToolCallMatch],

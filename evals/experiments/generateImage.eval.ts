@@ -1,5 +1,5 @@
 import { runLLM } from '../../src/llm';
-import { generateImageToolDefinition } from '../../src/tools/generateImage';
+import { generateImageTool } from '../../src/tools/generateImage';
 import { runEval } from '../evalTools';
 import { ToolCallMatch } from '../scorers';
 
@@ -19,12 +19,12 @@ runEval('generateImage', {
     task: (input) =>
         runLLM({
             messages: [{ role: 'user', content: input }],
-            tools: [generateImageToolDefinition],
+            tools: [generateImageTool],
         }),
     data: [
         {
             input: 'generate an image of a sunset',
-            expected: createToolCallMessage(generateImageToolDefinition.name),
+            expected: createToolCallMessage('generate_image'),
         },
     ],
     scorers: [ToolCallMatch],

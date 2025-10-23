@@ -1,5 +1,5 @@
 import { runLLM } from '../../src/llm';
-import { dadJokeToolDefinition } from '../../src/tools/dadJoke';
+import { dadJokeTool } from '../../src/tools/dadJoke';
 import { runEval } from '../evalTools';
 import { ToolCallMatch } from '../scorers';
 
@@ -19,12 +19,12 @@ runEval('dadJoke', {
     task: (input) =>
         runLLM({
             messages: [{ role: 'user', content: input }],
-            tools: [dadJokeToolDefinition],
+            tools: [dadJokeTool],
         }),
     data: [
         {
             input: 'tell me a funny dad joke',
-            expected: createToolCallMessage(dadJokeToolDefinition.name),
+            expected: createToolCallMessage('dad_joke'),
         },
     ],
     scorers: [ToolCallMatch],

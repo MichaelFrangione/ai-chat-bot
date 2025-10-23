@@ -1,19 +1,9 @@
-import { dadJokeToolDefinition, dadJokeTool } from "./dadJoke";
-import { generateImageToolDefinition, generateImageTool, askForImageApprovalTool } from "./generateImage";
-import { movieSearchToolDefinition, movieSearchTool } from "./movieSearch";
-import { redditToolDefinition, redditTool } from "./reddit";
-import { youtubeTranscriberToolDefinition, youtubeTranscriberTool } from "./youtubeTranscriber";
-import { websiteScraperToolDefinition, websiteScraperTool } from "./websiteScraper";
-
-// Legacy tool definitions (for backward compatibility)
-export const tools = [
-    dadJokeToolDefinition,
-    generateImageToolDefinition,
-    redditToolDefinition,
-    movieSearchToolDefinition,
-    youtubeTranscriberToolDefinition,
-    websiteScraperToolDefinition,
-];
+import { dadJokeTool } from "./dadJoke";
+import { generateImageTool, askForImageApprovalTool } from "./generateImage";
+import { movieSearchTool } from "./movieSearch";
+import { redditTool } from "./reddit";
+import { youtubeTranscriberTool } from "./youtubeTranscriber";
+import { websiteScraperTool } from "./websiteScraper";
 
 // AI SDK tools (new format with inputSchema)
 export const aiSdkTools = {
