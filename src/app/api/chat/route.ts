@@ -150,22 +150,24 @@ export async function POST(req: Request) {
                                     approved: true
                                 }, { metadata: { personality, userMessage: promptValue } });
 
-                                console.log('🎨 Image generation result:', result.substring(0, 100));
+                                console.log('🎨 Image generation result:', typeof result, result);
+                                console.log('🔍 Sending structured response:', typeof result, result.length || 'N/A');
 
-                                // Parse the structured response to get the image URL
-                                const parsed = JSON.parse(result);
-                                const imageUrl = parsed.data?.url;
-
-                                if (imageUrl) {
-                                    // Update the tool result with real image URL
-                                    writer.write({
-                                        type: 'tool-output-available',
-                                        toolCallId: part.toolCallId,
-                                        output: imageUrl,
-                                    });
-                                }
+                                // Send the full structured response
+                                writer.write({
+                                    type: 'tool-output-available',
+                                    toolCallId: part.toolCallId,
+                                    output: result, // Send the full structured JSON response
+                                });
                             } catch (error) {
                                 console.error('❌ Image generation error:', error);
+                                console.error('❌ Error details:', {
+                                    message: error.message,
+                                    stack: error.stack,
+                                    promptValue,
+                                    personality,
+                                    userMessage: promptValue
+                                });
                                 writer.write({
                                     type: 'tool-output-error',
                                     toolCallId: part.toolCallId,

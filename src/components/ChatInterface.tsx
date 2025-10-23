@@ -13,6 +13,7 @@ import { PERSONALITIES, PersonalityKey } from '@/constants/personalities';
 import ImageGenerationApproval from './ImageGenerationApproval';
 import StructuredOutputComponent from './StructuredOutput';
 import { parseToolResponse } from '@/lib/structured-parser';
+import SuggestionChips from './SuggestionChips';
 
 interface ChatInterfaceProps {
     chatId: string;
@@ -24,9 +25,10 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
     const { currentTheme } = useTheme();
     const { personality, setPersonality } = usePersonality();
     const [input, setInput] = useState('');
+    const [isAssistantResponding, setIsAssistantResponding] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const { messages, sendMessage, addToolResult, error } = useChat({
+    const { messages, sendMessage, addToolResult, error, status } = useChat({
         id: chatId,
         messages: initialMessages,
         sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
@@ -52,10 +54,49 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
         },
     });
 
-    // Auto-scroll to bottom when messages change
+    // Auto-scroll when messages change
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        const container = messagesContainerRef.current;
+        if (!container) return;
+
+        // Use requestAnimationFrame to wait for DOM updates
+        requestAnimationFrame(() => {
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: 'smooth'
+            });
+        });
     }, [messages]);
+
+
+    // Track when assistant is responding using status from useChat
+    useEffect(() => {
+        // Find the last assistant message
+        const lastAssistantMessage = [...messages].reverse().find(
+            (msg) => msg.role === 'assistant'
+        );
+
+        // Check if the last assistant message has content
+        const hasContent = lastAssistantMessage && (lastAssistantMessage as any).parts && (lastAssistantMessage as any).parts.length > 0;
+
+        // Determine if the assistant has finished responding
+        const isAssistantDone = status === 'ready' && hasContent;
+
+        // Hide suggestions when assistant is responding, show when done or no messages
+        setIsAssistantResponding(!isAssistantDone && messages.length > 0);
+    }, [status, messages]);
+
+    // Check if we're waiting for user input (image generation approval)
+    const isWaitingForUserInput = messages.some(message =>
+        message.parts?.some((part: any) =>
+            part.type === 'tool-generate_image' && part.state === 'input-available'
+        )
+    );
+
+    // Only disable input when AI is actively processing (not when waiting for user input)
+    const shouldDisableInput = status === 'submitted' && !isWaitingForUserInput;
 
     return (
         <div
@@ -74,21 +115,6 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
                 }}
             >
                 <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <h2 className="text-lg font-semibold" style={{ color: currentTheme.colors.headerText }}>
-                            AI Chat with Streaming
-                        </h2>
-                        <button
-                            onClick={onNewChat}
-                            className="text-xs px-3 py-1 rounded-md hover:opacity-80 transition-opacity"
-                            style={{
-                                backgroundColor: currentTheme.colors.componentColor,
-                                color: currentTheme.colors.text,
-                            }}
-                        >
-                            + New Chat
-                        </button>
-                    </div>
                     <div className="flex items-center gap-2">
                         <label
                             className="text-sm font-medium"
@@ -111,11 +137,22 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
                             ))}
                         </select>
                     </div>
+                    <button
+                        onClick={onNewChat}
+                        className="text-sm px-4 py-2 rounded-md hover:opacity-80 transition-opacity font-medium"
+                        style={{
+                            backgroundColor: currentTheme.colors.componentColor,
+                            color: currentTheme.colors.text,
+                        }}
+                    >
+                        + New Chat
+                    </button>
                 </div>
             </div>
 
             {/* Messages */}
             <div
+                ref={messagesContainerRef}
                 className="flex-1 overflow-y-auto p-6 space-y-4"
                 style={{
                     backgroundColor: currentTheme.colors.background,
@@ -181,6 +218,9 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
                                     const websitePartIndex = message.parts.findIndex((part: any) =>
                                         part.type === 'tool-websiteScraper' && part.state === 'output-available'
                                     );
+                                    const imageGenerationPartIndex = message.parts.findIndex((part: any) =>
+                                        part.type === 'tool-generate_image' && part.state === 'output-available'
+                                    );
 
                                     const renderedParts = message.parts.map((part: any, index: number) => {
                                         switch (part.type) {
@@ -189,7 +229,8 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
                                                 if ((movieSearchPartIndex !== -1 && index > movieSearchPartIndex) ||
                                                     (redditPartIndex !== -1 && index > redditPartIndex) ||
                                                     (youtubePartIndex !== -1 && index > youtubePartIndex) ||
-                                                    (websitePartIndex !== -1 && index > websitePartIndex)) {
+                                                    (websitePartIndex !== -1 && index > websitePartIndex) ||
+                                                    (imageGenerationPartIndex !== -1 && index > imageGenerationPartIndex)) {
                                                     return null;
                                                 }
                                                 return part.text ? <span key={index}>{part.text}</span> : null;
@@ -346,6 +387,82 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
                                                 }
                                                 break;
 
+                                            case 'tool-generate_image':
+                                                const callId = part.toolCallId;
+
+                                                switch (part.state) {
+                                                    case 'input-streaming':
+                                                        return (
+                                                            <div key={index} className="text-xs opacity-75 italic">
+                                                                Preparing image request...
+                                                            </div>
+                                                        );
+                                                    case 'input-available':
+                                                        // Show approval UI
+                                                        return (
+                                                            <ImageGenerationApproval
+                                                                key={index}
+                                                                prompt={part.input.prompt}
+                                                                onApprove={() => {
+                                                                    console.log('✅ User approved image generation');
+                                                                    addToolResult({
+                                                                        tool: 'generate_image',
+                                                                        toolCallId: callId,
+                                                                        output: 'APPROVED'
+                                                                    });
+                                                                }}
+                                                                onDeny={() => {
+                                                                    console.log('❌ User denied image generation');
+                                                                    addToolResult({
+                                                                        tool: 'generate_image',
+                                                                        toolCallId: callId,
+                                                                        output: 'DENIED'
+                                                                    });
+                                                                }}
+                                                            />
+                                                        );
+                                                    case 'output-available':
+                                                        // Show the generated image or approval result
+                                                        return (
+                                                            <div key={index}>
+                                                                {part.output === 'APPROVED' || part.output === 'DENIED' ? (
+                                                                    <div className="text-xs opacity-75 italic">
+                                                                        {part.output === 'APPROVED' ? '✅ Generating image...' : '❌ Image generation cancelled'}
+                                                                    </div>
+                                                                ) : (
+                                                                    // Parse the structured response and render it
+                                                                    (() => {
+                                                                        try {
+                                                                            console.log('🔍 Image generation output:', part.output);
+
+                                                                            // Check if it's already a structured object
+                                                                            if (typeof part.output === 'object' && part.output.type === 'image_generation') {
+                                                                                return <StructuredOutputComponent output={part.output} />;
+                                                                            }
+
+                                                                            // Otherwise try to parse as string
+                                                                            const imageOutput = parseToolResponse('generate_image', part.output as string);
+                                                                            if (imageOutput) {
+                                                                                return <StructuredOutputComponent output={imageOutput} />;
+                                                                            }
+                                                                        } catch (error) {
+                                                                            console.error('Error parsing image generation output:', error);
+                                                                        }
+                                                                        // Fallback to plain image if parsing fails
+                                                                        return <img src={part.output as string} alt="Generated" className="rounded-lg max-w-full" />;
+                                                                    })()
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    case 'output-error':
+                                                        return (
+                                                            <div key={index} className="text-red-500">
+                                                                Error: {part.errorText}
+                                                            </div>
+                                                        );
+                                                }
+                                                break;
+
                                             default:
                                                 return null;
                                         }
@@ -373,7 +490,27 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
                 ))}
 
                 {/* Scroll anchor */}
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} style={{ marginBottom: '20px' }} />
+
+                {/* Loading indicator when processing */}
+                {status === 'submitted' && (
+                    <div className="flex items-center justify-center py-4">
+                        <div className="flex items-center space-x-2 text-gray-500">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500"></div>
+                            <span className="text-sm">Processing...</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Show suggestion chips below messages when it's user's turn and not waiting for input */}
+                {!isAssistantResponding && !isWaitingForUserInput && (
+                    <SuggestionChips
+                        count={4}
+                        onQuickPrompt={(text) => {
+                            sendMessage({ text });
+                        }}
+                    />
+                )}
             </div>
 
             {/* Input */}
@@ -387,7 +524,7 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
                 <form
                     onSubmit={e => {
                         e.preventDefault();
-                        if (input.trim()) {
+                        if (input.trim() && !isWaitingForUserInput) {
                             sendMessage({ text: input });
                             setInput('');
                         }
@@ -395,10 +532,12 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
                     className="flex gap-2"
                 >
                     <input
+                        type="text"
                         value={input}
                         onChange={e => setInput(e.target.value)}
-                        placeholder="Ask for a dad joke..."
-                        className="flex-1 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
+                        placeholder={isWaitingForUserInput ? "Please respond to the image generation request above..." : status === 'submitted' ? "Processing..." : "Type your message..."}
+                        disabled={shouldDisableInput}
+                        className="flex-1 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         style={{
                             backgroundColor: currentTheme.colors.background,
                             borderColor: currentTheme.colors.border,
@@ -407,7 +546,7 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
                     />
                     <button
                         type="submit"
-                        disabled={!input.trim()}
+                        disabled={!input.trim() || shouldDisableInput}
                         className="px-6 py-2 rounded-lg font-medium transition-opacity disabled:opacity-50"
                         style={{
                             backgroundColor: currentTheme.colors.componentColor,

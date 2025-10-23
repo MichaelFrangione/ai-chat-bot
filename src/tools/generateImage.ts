@@ -38,11 +38,9 @@ export const generateImageTool = {
         const personality = metadata?.personality as PersonalityKey | undefined;
         const userMessage = metadata?.userMessage as string;
 
-        const personaHint = personality && personality !== 'assistant' ? ` Style: ${personality}.` : '';
-
         const response = await openai.images.generate({
             model: "dall-e-3",
-            prompt: `${prompt}, the user's original message is: ${userMessage}.${personaHint}`,
+            prompt: prompt, // Use only the original prompt to avoid safety system issues
             n: 1,
             size: "1024x1024",
         });

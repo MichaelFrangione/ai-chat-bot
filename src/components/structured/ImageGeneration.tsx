@@ -13,41 +13,21 @@ export default function ImageGeneration({ output }: ImageGenerationProps) {
 
     return (
         <div
-            className="rounded-xl p-6 shadow-lg border"
+            className="rounded-xl p-4"
             style={{
-                backgroundColor: currentTheme.colors.surface,
-                borderColor: currentTheme.colors.border
+                backgroundColor: currentTheme.colors.surface
             }}
         >
-            <div className="mb-4">
-                <div className="flex items-center gap-2 mb-2">
-                    <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: currentTheme.colors.accent }}
-                    ></div>
-                    <h3
-                        className="text-lg font-semibold"
-                        style={{ color: currentTheme.colors.text }}
-                    >
-                        {output.metadata.title}
-                    </h3>
-                </div>
-                {output.contextualMessage ? (
-                    <p
-                        className="text-sm leading-relaxed opacity-80"
-                        style={{ color: currentTheme.colors.text }}
-                    >
-                        {output.contextualMessage}
-                    </p>
-                ) : (
-                    <p
-                        className="text-sm opacity-80"
-                        style={{ color: currentTheme.colors.text }}
-                    >
-                        {output.metadata.description}
-                    </p>
-                )}
-            </div>
+            {/* Contextual Message First */}
+            {output.contextualMessage && (
+                <p
+                    className="text-sm leading-relaxed mb-4"
+                    style={{ color: currentTheme.colors.text }}
+                >
+                    {output.contextualMessage}
+                </p>
+            )}
+
 
             {/* Generated Image */}
             <div className="space-y-4">
@@ -87,7 +67,7 @@ export default function ImageGeneration({ output }: ImageGenerationProps) {
                     </div>
                 </div>
 
-                {/* Image Details */}
+                {/* Prompt Section Below Image */}
                 <div
                     className="rounded-lg p-4"
                     style={{ backgroundColor: currentTheme.colors.background }}
@@ -105,7 +85,6 @@ export default function ImageGeneration({ output }: ImageGenerationProps) {
                         "{data.prompt}"
                     </p>
                 </div>
-
             </div>
         </div>
     );

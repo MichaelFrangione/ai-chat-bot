@@ -19,7 +19,7 @@ export default function Home() {
                             className="text-3xl font-bold"
                             style={{ color: currentTheme.colors.text }}
                         >
-                            EchoBot (AI SDK)
+                            EchoBot
                         </h1>
                         <div className="flex items-center gap-3">
                             <span

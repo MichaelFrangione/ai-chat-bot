@@ -20,6 +20,10 @@ export const redditTool = {
         const actualLimit = limit ?? 5;
         const actualSubreddit = subreddit ?? null;
 
+        // When filtering is enabled, fetch more posts to ensure we have enough after filtering
+        // Use a more conservative multiplier based on typical moderator post ratios
+        const fetchLimit = Math.max(actualLimit * 2, 10); // Fetch 2x the requested amount, minimum 10
+
         // Check for Reddit API credentials
         if (!process.env.REDDIT_CLIENT_ID || !process.env.REDDIT_CLIENT_SECRET) {
             console.error('Reddit API credentials not configured');
@@ -46,8 +50,9 @@ export const redditTool = {
             console.log('=== REDDIT API CALL START ===');
             console.log('Using official Reddit API');
             console.log('Subreddit:', subredditPath);
-            console.log('Limit:', actualLimit);
-            console.log('Full URL:', `https://oauth.reddit.com/r/${actualSubreddit || 'all'}/hot?limit=${actualLimit}`);
+            console.log('Requested limit:', actualLimit);
+            console.log('Fetch limit:', fetchLimit);
+            console.log('Full URL:', `https://oauth.reddit.com/r/${actualSubreddit || 'all'}/hot?limit=${fetchLimit}`);
 
             // First, get an access token
             const tokenResponse = await fetch('https://www.reddit.com/api/v1/access_token', {
@@ -69,7 +74,7 @@ export const redditTool = {
             console.log('Reddit access token obtained');
 
             // Now fetch posts using the official API
-            const response = await fetch(`https://oauth.reddit.com/r/${actualSubreddit || 'all'}/hot?limit=${actualLimit}`, {
+            const response = await fetch(`https://oauth.reddit.com/r/${actualSubreddit || 'all'}/hot?limit=${fetchLimit}`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                     'User-Agent': 'Chatbot-Agent/1.0 by YourUsername'
@@ -119,9 +124,51 @@ export const redditTool = {
                     child.data.thumbnail.replace(/&amp;/g, '&') : null,
                 isVideo: child.data.is_video || false,
                 domain: child.data.domain,
+                isModerator: child.data.distinguished === 'moderator',
+                isStickied: child.data.stickied || false,
+                isLocked: child.data.locked || false,
             }));
 
-            console.log(`Reddit API returned ${posts.length} posts (requested ${actualLimit})`);
+            // Filter out moderator messages, stickied posts, and meta posts
+            posts = posts.filter(post => {
+                // Skip moderator posts
+                if (post.isModerator) {
+                    console.log(`Filtering out moderator post: ${post.title}`);
+                    return false;
+                }
+
+                // Skip stickied posts (usually moderator announcements)
+                if (post.isStickied) {
+                    console.log(`Filtering out stickied post: ${post.title}`);
+                    return false;
+                }
+
+                // Skip locked posts (often moderator announcements)
+                if (post.isLocked) {
+                    console.log(`Filtering out locked post: ${post.title}`);
+                    return false;
+                }
+
+                // Skip posts with moderator-like titles
+                const title = post.title.toLowerCase();
+                const moderatorKeywords = [
+                    'moderator', 'mod', 'announcement', 'meta', 'rule', 'policy',
+                    'update', 'important', 'notice', 'warning', 'reminder',
+                    'oc only', 'oc-only', 'going oc', 'going oc only'
+                ];
+
+                if (moderatorKeywords.some(keyword => title.includes(keyword))) {
+                    console.log(`Filtering out moderator-like post: ${post.title}`);
+                    return false;
+                }
+
+                return true;
+            });
+
+            // Limit to the originally requested amount
+            posts = posts.slice(0, actualLimit);
+
+            console.log(`Reddit API returned ${posts.length} posts after filtering (requested ${actualLimit}, fetched ${fetchLimit})`);
 
             const title = actualSubreddit ? `Top Posts from r/${actualSubreddit}` : "Top Reddit Posts";
             const description = actualSubreddit
