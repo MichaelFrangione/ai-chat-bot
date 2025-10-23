@@ -14,6 +14,9 @@ import ImageGenerationApproval from './ImageGenerationApproval';
 import StructuredOutputComponent from './StructuredOutput';
 import { parseToolResponse } from '@/lib/structured-parser';
 import SuggestionChips from './SuggestionChips';
+import { useAssistantStatus } from '@/hooks/useAssistantStatus';
+import { useImageGenerationStatus } from '@/hooks/useImageGenerationStatus';
+import { useAutoScroll } from '@/hooks/useAutoScroll';
 
 interface ChatInterfaceProps {
     chatId: string;
@@ -25,7 +28,6 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
     const { currentTheme } = useTheme();
     const { personality, setPersonality } = usePersonality();
     const [input, setInput] = useState('');
-    const [isAssistantResponding, setIsAssistantResponding] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const { messages, sendMessage, addToolResult, error, status } = useChat({
@@ -54,46 +56,10 @@ export default function ChatInterface({ chatId, initialMessages, onNewChat }: Ch
         },
     });
 
-    // Auto-scroll when messages change
-    const messagesContainerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const container = messagesContainerRef.current;
-        if (!container) return;
-
-        // Use requestAnimationFrame to wait for DOM updates
-        requestAnimationFrame(() => {
-            container.scrollTo({
-                top: container.scrollHeight,
-                behavior: 'smooth'
-            });
-        });
-    }, [messages]);
-
-
-    // Track when assistant is responding using status from useChat
-    useEffect(() => {
-        // Find the last assistant message
-        const lastAssistantMessage = [...messages].reverse().find(
-            (msg) => msg.role === 'assistant'
-        );
-
-        // Check if the last assistant message has content
-        const hasContent = lastAssistantMessage && (lastAssistantMessage as any).parts && (lastAssistantMessage as any).parts.length > 0;
-
-        // Determine if the assistant has finished responding
-        const isAssistantDone = status === 'ready' && hasContent;
-
-        // Hide suggestions when assistant is responding, show when done or no messages
-        setIsAssistantResponding(!isAssistantDone && messages.length > 0);
-    }, [status, messages]);
-
-    // Check if we're waiting for user input (image generation approval)
-    const isWaitingForUserInput = messages.some(message =>
-        message.parts?.some((part: any) =>
-            part.type === 'tool-generate_image' && part.state === 'input-available'
-        )
-    );
+    // Use custom hooks for cleaner logic
+    const { isAssistantResponding } = useAssistantStatus(messages, status);
+    const { isWaitingForUserInput } = useImageGenerationStatus(messages);
+    const { messagesContainerRef } = useAutoScroll(messages);
 
     // Only disable input when AI is actively processing (not when waiting for user input)
     const shouldDisableInput = status === 'submitted' && !isWaitingForUserInput;
