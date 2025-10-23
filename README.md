@@ -2,7 +2,7 @@
 
 A modern AI-powered chatbot built with Next.js and OpenAI's GPT models. The agent can perform various tasks through specialized tools and provides rich, interactive responses.
 
-<div align="center">
+<div style="text-align: center;">
   <img src="screenshot.png" alt="EchoBot Chat Interface" width="600" />
 </div>
 
@@ -10,6 +10,7 @@ A modern AI-powered chatbot built with Next.js and OpenAI's GPT models. The agen
 
 ### Core Capabilities
 - **Interactive Chat Interface**: Clean, responsive web UI with React and Tailwind CSS
+- **AI SDK Integration**: Modern, type-safe AI interactions with streaming and tool support
 - **Multi-Tool Agent**: Integrates specialized tools for different tasks
 - **Personality System**: 6 distinct AI personalities
 - **Structured Output**: Rich, formatted responses with custom components
@@ -70,6 +71,7 @@ The chatbot features 6 distinct personalities that affect how responses are deli
 - **Tailwind CSS** - Styling
 
 ### Backend & AI
+- **AI SDK Toolkit** - Modern AI integration framework for seamless LLM interactions and streaming text
 - **OpenAI GPT-5-nano** - Language model
 - **DALL-E 3** - Image generation
 - **Upstash Redis** - Session management and memory (production)
