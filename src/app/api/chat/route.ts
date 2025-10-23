@@ -1,27 +1,21 @@
-import { openai } from '@ai-sdk/openai';
 import {
-    streamText,
-    convertToModelMessages,
     UIMessage,
-    createUIMessageStream,
-    createUIMessageStreamResponse,
-    isToolUIPart,
     validateUIMessages,
-    createIdGenerator
 } from 'ai';
 import { dadJokeTool } from '@/tools/dadJoke';
-import { generateImageTool, generateImageValidationTool } from '@/tools/generateImage';
+import { generateImageValidationTool } from '@/tools/generateImage';
 import { movieSearchTool } from '@/tools/movieSearch';
 import { redditTool } from '@/tools/reddit';
 import { websiteScraperTool } from '@/tools/websiteScraper';
 import { youtubeTranscriberTool } from '@/tools/youtubeTranscriber';
-import { getPersonalityDirectives, PersonalityKey } from '@/constants/personalities';
-import { loadChat, saveChat, getChatSummary } from '@/util/chat-store';
-import {
-    shouldSummarize,
-    splitMessagesForSummarization,
-    summarizeConversation
-} from '@/util/summarization';
+
+// Import utility classes
+import { MessageManager } from '@/utils/message-manager';
+import { PersonalityHandler } from '@/utils/personality-handler';
+import { ConversationManager } from '@/utils/conversation-manager';
+import { ImageProcessingHandler } from '@/utils/image-processing-handler';
+import { ChatStreamHandler } from '@/utils/chat-stream-handler';
+import { ResponseHandler } from '@/utils/response-handler';
 
 export const maxDuration = 30;
 
@@ -37,199 +31,57 @@ const tools = {
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const { message, id: chatId } = body as { message: UIMessage; id: string; };
+        // Parse and validate request
+        const { message, id: chatId } = await req.json() as { message: UIMessage; id: string; };
 
         if (!chatId || !message) {
-            return new Response(JSON.stringify({
-                error: 'Both message and id are required',
-            }), {
-                status: 400,
-                headers: { 'Content-Type': 'application/json' }
-            });
+            return ResponseHandler.createValidationErrorResponse('Both message and id are required');
         }
-
-        // Load previous messages and append new message
-        const previousMessages = await loadChat(chatId);
-        // Append new message and deduplicate by ID (keeps last occurrence)
-        // This handles tool calls where client sends updated assistant message
-        const allMessages = [...previousMessages, message];
-        const messages = Array.from(
-            new Map(allMessages.map(msg => [msg.id, msg])).values()
-        );
-
-        // Read personality from cookie (simple, reliable, server-side) 
-        const cookieHeader = req.headers.get('cookie') || '';
-        const personalityCookie = cookieHeader
-            .split(';')
-            .find(c => c.trim().startsWith('personality='))
-            ?.split('=')[1]
-            ?.trim();
-
-        const personality = (personalityCookie as PersonalityKey) || 'assistant';
 
         console.log('=== CHAT REQUEST ===');
         console.log('Chat ID:', chatId);
-        console.log('Cookie header:', cookieHeader);
-        console.log('Personality from cookie:', personality);
+
+        // Load and merge messages
+        const messages = await MessageManager.loadAndMergeMessages(chatId, message);
         console.log('Messages count:', messages.length);
 
-        // Check if we need to summarize
-        let summary = '';
-        let messagesToProcess = messages;
+        // Get personality and build system prompt
+        const personality = PersonalityHandler.getPersonalityFromRequest(req);
+        console.log('Personality from cookie:', personality);
 
-        if (chatId && shouldSummarize(messages.length)) {
-            console.log('📊 Triggering summarization...');
+        // Handle conversation summarization
+        const { summary, messagesToProcess } = await ConversationManager.handleConversation(chatId, messages);
+        const systemPrompt = PersonalityHandler.buildSystemPrompt(personality, summary);
 
-            // Get previous summary
-            const previousSummary = await getChatSummary(chatId);
-
-            // Split messages
-            const { toSummarize, toKeep } = splitMessagesForSummarization(messages);
-
-            console.log(`📦 Summarizing ${toSummarize.length} messages, keeping ${toKeep.length} recent`);
-
-            // Generate new summary
-            summary = await summarizeConversation(toSummarize, previousSummary);
-            console.log(`✅ Summary generated: ${summary.substring(0, 100)}...`);
-
-            // Use trimmed messages for processing
-            messagesToProcess = toKeep;
-        } else if (chatId) {
-            // Load existing summary
-            summary = await getChatSummary(chatId);
-        }
-
-        // Build system prompt with summary if available
-        let systemPrompt = getPersonalityDirectives(personality);
-        if (summary && summary.length > 0) {
-            systemPrompt = `Previous conversation summary: ${summary}\n\n${systemPrompt}`;
-        }
-
-        // Validate messages if they contain tools (use trimmed messages if summarized)
+        // Validate messages
         const validatedMessages = await validateUIMessages({
             messages: messagesToProcess,
             tools: tools as any,
         });
 
-        // Generate server-side message IDs for persistence
-        const messageIdGenerator = createIdGenerator({
-            prefix: 'msg',
-            size: 16,
-        });
-
-        // Check if we need to handle image generation approval
-        const lastMessage = validatedMessages[validatedMessages.length - 1];
-        let needsImageProcessing = false;
-
-        if (lastMessage && lastMessage.parts) {
-            for (const part of lastMessage.parts) {
-                if (isToolUIPart(part) && part.type === 'tool-generate_image' && part.state === 'output-available' && part.output === 'APPROVED') {
-                    needsImageProcessing = true;
-                    break;
-                }
-            }
-        }
-
-        if (needsImageProcessing) {
-            // Use createUIMessageStream to handle image generation
-            const stream = createUIMessageStream({
-                originalMessages: validatedMessages,
-                execute: async ({ writer }) => {
-                    // Process image generation
-                    for (const part of lastMessage.parts) {
-                        if (isToolUIPart(part) && part.type === 'tool-generate_image' && part.state === 'output-available' && part.output === 'APPROVED') {
-                            const promptValue = (part as any).input.prompt;
-                            try {
-                                const result = await generateImageTool.execute({
-                                    prompt: promptValue,
-                                    approved: true
-                                }, { metadata: { personality, userMessage: promptValue } });
-
-                                console.log('🎨 Image generation result:', typeof result, result);
-                                console.log('🔍 Sending structured response:', typeof result, result.length || 'N/A');
-
-                                // Send the full structured response
-                                writer.write({
-                                    type: 'tool-output-available',
-                                    toolCallId: part.toolCallId,
-                                    output: result, // Send the full structured JSON response
-                                });
-                            } catch (error) {
-                                console.error('❌ Image generation error:', {
-                                    message: error instanceof Error ? error.message : String(error),
-                                    prompt: promptValue,
-                                    personality
-                                });
-                                writer.write({
-                                    type: 'tool-output-error',
-                                    toolCallId: part.toolCallId,
-                                    errorText: 'Failed to generate image',
-                                });
-                            }
-                        }
-                    }
-
-                    // Continue with normal LLM generation
-                    const result = streamText({
-                        model: openai('gpt-4o'),
-                        messages: convertToModelMessages(validatedMessages),
-                        system: systemPrompt,
-                        tools,
-                    });
-
-                    writer.merge(result.toUIMessageStream({ originalMessages: validatedMessages }));
-                },
-                onFinish: async ({ messages: finalMessages }) => {
-                    if (chatId) {
-                        console.log('💾 Saving messages. Count:', finalMessages.length);
-                        // Save with summary if we generated one
-                        await saveChat({
-                            chatId,
-                            messages: finalMessages,
-                            summary: summary || undefined
-                        });
-                    }
-                },
-            });
-
-            return createUIMessageStreamResponse({ stream });
-        } else {
-            // Normal flow for all other cases
-            const result = streamText({
-                model: openai('gpt-4o'),
-                messages: convertToModelMessages(validatedMessages),
-                system: systemPrompt,
+        // Handle image processing if needed
+        if (ImageProcessingHandler.needsImageProcessing(validatedMessages)) {
+            return ImageProcessingHandler.createImageProcessingStream(
+                validatedMessages,
+                systemPrompt,
                 tools,
-            });
-
-            return result.toUIMessageStreamResponse({
-                originalMessages: validatedMessages,
-                generateMessageId: messageIdGenerator,
-                onFinish: async ({ messages: finalMessages }) => {
-                    if (chatId) {
-                        console.log('💾 Saving messages. Count:', finalMessages.length);
-                        // Save with summary if we generated one
-                        await saveChat({
-                            chatId,
-                            messages: finalMessages,
-                            summary: summary || undefined
-                        });
-                    }
-                },
-            });
+                chatId,
+                summary
+            );
         }
+
+        // Normal chat flow
+        return ChatStreamHandler.createNormalChatStream(
+            validatedMessages,
+            systemPrompt,
+            tools,
+            chatId,
+            summary
+        );
+
     } catch (error) {
         console.error('=== API ERROR ===');
         console.error('Error:', error);
-
-        // Return a proper error response that the frontend can handle
-        return new Response(JSON.stringify({
-            error: 'Failed to process request',
-            details: error instanceof Error ? error.message : 'Unknown error'
-        }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return ResponseHandler.createErrorResponse('Failed to process request', 500, error);
     }
 }

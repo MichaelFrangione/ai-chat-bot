@@ -116,4 +116,3 @@ Do NOT include detailed tool outputs, technical details, or raw data. Focus on t
         return previousSummary || `Previous conversation had ${messages.length} messages about various topics.`;
     }
 }
-

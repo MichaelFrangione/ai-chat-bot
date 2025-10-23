@@ -207,4 +207,3 @@ export async function getChatSummary(chatId: string): Promise<string> {
         return chat?.summary || '';
     }
 }
-

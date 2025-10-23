@@ -1,4 +1,4 @@
-import { loadChat } from '@/util/chat-store';
+import { loadChat } from '@/utils/chat-store';
 
 export async function POST(req: Request) {
     try {
